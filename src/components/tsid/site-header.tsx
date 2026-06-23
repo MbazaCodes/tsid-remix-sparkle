@@ -8,96 +8,112 @@ export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40" style={{ background: "#003366" }}>
-      {/* Tanzania flag stripe */}
+    <header className="sticky top-0 z-40" style={{
+      background: "#ffffff",
+      borderBottom: "1px solid #e2e8f0",
+      boxShadow: "0 1px 8px rgba(0,0,0,.06)",
+    }}>
+      {/* Tanzania flag stripe at very top */}
       <div className="tz-flag-stripe" aria-hidden />
 
-      <div className="mx-auto max-w-7xl px-4 py-2.5 flex items-center gap-4">
-        {/* Logo + wordmark — logo blends into navy bg via mix-blend-mode */}
-        <Link to="/" className="flex items-center gap-3 group" style={{ textDecoration: "none" }}>
-          <div style={{
-            position: "relative",
-            width: 44, height: 44,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            {/* The logo PNG has a white/light bg — multiply blend removes it */}
-            <img
-              src={ASSETS.logo}
-              alt="TSID"
-              style={{
-                width: 44, height: 44,
-                objectFit: "contain",
-                mixBlendMode: "luminosity",
-                filter: "brightness(1.4) contrast(0.9)",
-              }}
-            />
-          </div>
-          <div style={{ lineHeight: 1 }}>
+      <div className="mx-auto max-w-7xl px-4 py-2 flex items-center gap-4">
+
+        {/* Logo + wordmark */}
+        <Link to="/" className="flex items-center gap-3" style={{ textDecoration: "none" }}>
+          {/* Logo — full sharpness, no blend, larger */}
+          <img
+            src={ASSETS.logo}
+            alt="TSID"
+            style={{
+              width: 56,
+              height: 56,
+              objectFit: "contain",
+              imageRendering: "crisp-edges",
+              flexShrink: 0,
+            }}
+          />
+          <div style={{ lineHeight: 1.1 }}>
             <div style={{
               fontFamily: "var(--font-display)",
               fontWeight: 900,
-              fontSize: 20,
-              color: "#ffffff",
-              letterSpacing: -0.3,
+              fontSize: 22,
+              color: "#003366",
+              letterSpacing: -0.4,
               lineHeight: 1,
             }}>
               TSID
             </div>
             <div style={{
-              fontSize: 9,
-              fontWeight: 700,
-              color: "#a3c4dd",
-              textTransform: "uppercase",
-              letterSpacing: 1.2,
-              marginTop: 2,
+              fontSize: 9.5,
+              fontWeight: 600,
+              color: "#64748b",
+              letterSpacing: 0.3,
+              marginTop: 3,
+              lineHeight: 1,
             }}>
               Jamhuri ya Tanzania
             </div>
           </div>
         </Link>
 
-        {/* Nav links */}
+        {/* Right side: secondary branding (like screenshot) */}
+        <div className="hidden lg:flex items-center gap-3 ml-6 pl-6"
+          style={{ borderLeft: "1px solid #e2e8f0" }}>
+          <img src={ASSETS.coat} alt="" style={{ width: 38, height: 38, objectFit: "contain" }} />
+          <div style={{ lineHeight: 1.2 }}>
+            <div style={{ fontSize: 11, fontWeight: 800, color: "#003366", letterSpacing: 0.2 }}>
+              JAMHURI YA MUUNGANO WA TANZANIA
+            </div>
+            <div style={{ fontSize: 10, color: "#64748b", marginTop: 2 }}>
+              United Republic of Tanzania · Wizara ya Elimu
+            </div>
+          </div>
+        </div>
+
+        {/* Nav */}
         <nav className="ml-auto hidden md:flex items-center gap-1 text-sm">
           {[
-            { to: "/", label: "Home", exact: true },
+            { to: "/",       label: "Home",      exact: true },
             { to: "/search", label: "Verify ID" },
           ].map((item) => (
             <Link
               key={item.to}
               to={item.to}
               activeOptions={item.exact ? { exact: true } : undefined}
-              style={{ color: "#a3c4dd", padding: "6px 12px", borderRadius: 6, fontWeight: 600, fontSize: 13, textDecoration: "none", transition: "color .15s, background .15s" }}
-              activeProps={{ style: { color: "#fff", background: "rgba(255,255,255,.12)", padding: "6px 12px", borderRadius: 6, fontWeight: 600, fontSize: 13, textDecoration: "none" } }}
-              inactiveProps={{ className: "hover:text-white hover:bg-white/10" }}
+              style={{ padding: "6px 12px", borderRadius: 6, fontWeight: 600, fontSize: 13, textDecoration: "none", color: "#475569", transition: "all .15s" }}
+              activeProps={{ style: { padding: "6px 12px", borderRadius: 6, fontWeight: 700, fontSize: 13, textDecoration: "none", color: "#003366", background: "#f0f4fa" } }}
+              inactiveProps={{ className: "hover:text-primary hover:bg-muted" }}
             >
               {item.label}
             </Link>
           ))}
-          <a href="#features" style={{ color: "#a3c4dd", padding: "6px 12px", borderRadius: 6, fontWeight: 600, fontSize: 13, textDecoration: "none" }}
-            className="hover:text-white hover:bg-white/10">
+          <a href="#features"
+            style={{ padding: "6px 12px", borderRadius: 6, fontWeight: 600, fontSize: 13, color: "#475569", textDecoration: "none" }}
+            className="hover:text-primary hover:bg-muted">
             Features
           </a>
-          <a href="#roles" style={{ color: "#a3c4dd", padding: "6px 12px", borderRadius: 6, fontWeight: 600, fontSize: 13, textDecoration: "none" }}
-            className="hover:text-white hover:bg-white/10">
+          <a href="#roles"
+            style={{ padding: "6px 12px", borderRadius: 6, fontWeight: 600, fontSize: 13, color: "#475569", textDecoration: "none" }}
+            className="hover:text-primary hover:bg-muted">
             Portals
           </a>
         </nav>
 
-        {/* CTA buttons */}
-        <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm"
-            style={{ color: "#a3c4dd", border: "1px solid rgba(255,255,255,.2)", fontSize: 13 }}
-            className="hidden md:inline-flex hover:bg-white/10 hover:text-white">
+        {/* CTAs */}
+        <div className="flex items-center gap-2 ml-3">
+          <Button asChild variant="outline" size="sm"
+            style={{ fontSize: 13, fontWeight: 600, color: "#003366", borderColor: "#003366" }}
+            className="hidden md:inline-flex hover:bg-primary/5">
             <Link to="/auth">Sign in</Link>
           </Button>
           <Button asChild size="sm"
-            style={{ background: "#1B8F3A", color: "#fff", fontWeight: 700, fontSize: 13, border: "none" }}
+            style={{ background: "#003366", color: "#fff", fontWeight: 700, fontSize: 13, border: "none" }}
             className="hover:opacity-90">
             <Link to="/auth">Get started</Link>
           </Button>
           {/* Mobile hamburger */}
           <button
-            className="md:hidden p-1.5 rounded text-white/70 hover:text-white hover:bg-white/10"
+            className="md:hidden p-1.5 rounded text-slate-600 hover:text-primary hover:bg-muted"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -105,21 +121,21 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile dropdown */}
       {menuOpen && (
-        <div style={{ background: "#002550", borderTop: "1px solid rgba(255,255,255,.08)" }}>
+        <div style={{ background: "#fff", borderTop: "1px solid #e2e8f0" }}>
           <div className="px-4 py-3 flex flex-col gap-1">
             {[
-              { to: "/", label: "Home" },
+              { to: "/",       label: "Home" },
               { to: "/search", label: "Verify ID" },
-              { to: "/auth", label: "Sign in" },
+              { to: "/auth",   label: "Sign in" },
             ].map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 onClick={() => setMenuOpen(false)}
-                style={{ color: "#a3c4dd", padding: "9px 12px", borderRadius: 6, fontWeight: 600, fontSize: 14, textDecoration: "none", display: "block" }}
-                className="hover:text-white hover:bg-white/10"
+                style={{ color: "#003366", padding: "9px 12px", borderRadius: 6, fontWeight: 600, fontSize: 14, textDecoration: "none", display: "block" }}
+                className="hover:bg-muted"
               >
                 {item.label}
               </Link>

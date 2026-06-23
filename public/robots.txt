@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /gov
+Disallow: /school
+Disallow: /student
+
+Sitemap: /sitemap.xml

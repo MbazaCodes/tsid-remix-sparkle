@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
 import { ASSETS } from "@/lib/tsid";
 import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/tsid/site-header";
 import { SiteFooter } from "@/components/tsid/site-footer";
-import { IdCard } from "@/components/tsid/id-card";
+import { IdCardFrontOnly, IdCardBackOnly } from "@/components/tsid/id-card";
 import { ShieldCheck, GraduationCap, Building2, Search, QrCode, FileCheck2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -52,7 +53,7 @@ function Index() {
                 <div className="flex items-center gap-2"><img src={ASSETS.flag} alt="" className="h-3" /> Made for Tanzania</div>
               </div>
             </div>
-            <div className="flex justify-center md:justify-end overflow-x-auto">
+            <div className="flex justify-center md:justify-end">
               <HeroCardPreview />
             </div>
           </div>
@@ -128,10 +129,49 @@ const DEMO_DATA = {
   parent_phone: "+255 712 345 678",
 };
 
+// Scale: render at full size (204×324px each) then shrink via transform
+// so both front+back fit inside ~420px column without overflow
+const CARD_W = 204;
+const CARD_H = 324;
+const SCALE  = 0.72; // both cards side by side: 2×204×0.72 + gap ≈ 310px
+
 function HeroCardPreview() {
   return (
-    <div style={{ display: "flex", gap: 20, flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start" }}>
-      <IdCard data={DEMO_DATA} showBack={true} downloadable={false} />
+    <div style={{
+      // Reserve the shrunk pixel space so layout doesn't collapse
+      width:  Math.round((CARD_W * 2 + 20) * SCALE),
+      height: Math.round(CARD_H * SCALE),
+      position: "relative",
+      flexShrink: 0,
+    }}>
+      <div style={{
+        position: "absolute",
+        top: 0, left: 0,
+        display: "flex",
+        gap: 20,
+        alignItems: "flex-start",
+        transformOrigin: "top left",
+        transform: `scale(${SCALE})`,
+      }}>
+        <HeroFront />
+        <HeroBack />
+      </div>
     </div>
   );
+}
+
+// Thin wrappers that render just the card canvases (no labels, no buttons)
+function HeroFront() {
+  const [qr, setQr] = useState("");
+  useEffect(() => {
+    import("qrcode").then((QRCode) =>
+      QRCode.default.toDataURL("https://verify.tsid.go.tz/id/TSID-2025-A1234567", {
+        margin: 1, width: 200, color: { dark: "#000", light: "#fff" },
+      }).then(setQr).catch(() => {})
+    );
+  }, []);
+  return <IdCardFrontOnly data={DEMO_DATA} qr={qr} />;
+}
+function HeroBack() {
+  return <IdCardBackOnly data={DEMO_DATA} />;
 }

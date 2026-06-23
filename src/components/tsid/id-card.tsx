@@ -114,6 +114,13 @@ function SchoolBadge({ size = 12 }: { size?: number }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 //  CARD FRONT
 // ═══════════════════════════════════════════════════════════════════════════════
+export function IdCardFrontOnly({ data, qr }: { data: IdCardData; qr: string }) {
+  return <CardFront data={data} qr={qr} />;
+}
+export function IdCardBackOnly({ data }: { data: IdCardData }) {
+  return <CardBack data={data} />;
+}
+
 function CardFront({ data, qr }: { data: IdCardData; qr: string }) {
   return (
     <div style={{

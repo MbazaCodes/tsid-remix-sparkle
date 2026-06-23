@@ -40,7 +40,7 @@ function Index() {
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                  <Link to="/auth" search={{ mode: "signup" } as never}>Create an account</Link>
+                  <Link to="/auth">Sign in to the portal</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
                   <Link to="/search"><Search className="h-4 w-4 mr-2" /> Verify a student ID</Link>
@@ -103,7 +103,7 @@ function Index() {
                   </div>
                   <div className="mt-4 text-xs uppercase tracking-widest text-muted-foreground">For {r.tag}</div>
                   <p className="mt-2 text-sm text-foreground">{r.body}</p>
-                  <Button asChild variant="link" className="px-0 mt-3 text-primary"><Link to="/auth" search={{ mode: "signup" } as never}>Open the {r.tag.toLowerCase()} portal →</Link></Button>
+                  <Button asChild variant="link" className="px-0 mt-3 text-primary"><Link to="/auth">Open the {r.tag.toLowerCase()} portal →</Link></Button>
                 </div>
               ))}
             </div>

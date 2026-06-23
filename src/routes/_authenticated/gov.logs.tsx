@@ -4,31 +4,71 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/gov/logs")({ component: Page });
 
+const ACTION_COLORS: Record<string, string> = {
+  "auth:login":            "text-blue-600 bg-blue-50",
+  "auth:logout":           "text-slate-600 bg-slate-100",
+  "student:create":        "text-emerald-700 bg-emerald-50",
+  "school:create":         "text-violet-700 bg-violet-50",
+  "application:approve":   "text-emerald-700 bg-emerald-50",
+  "application:reject":    "text-red-700 bg-red-50",
+  "payment:mark_paid":     "text-blue-700 bg-blue-50",
+};
+
 function Page() {
-  const { data } = useQuery({
-    queryKey: ["audit-logs"],
-    queryFn: async () => (await supabase.from("audit_logs").select("*").order("created_at", { ascending: false }).limit(200)).data ?? [],
+  const { data: logs = [] } = useQuery({
+    queryKey: ["gov-logs"],
+    queryFn: async () =>
+      (await supabase
+        .from("activity_logs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(300))
+        .data ?? [],
   });
+
   return (
     <div className="space-y-5">
-      <h1 className="text-2xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>Audit logs</h1>
+      <div>
+        <h1 className="text-2xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>Activity Logs</h1>
+        <p className="text-sm text-muted-foreground">System-wide audit trail · {logs.length} entries</p>
+      </div>
       <div className="rounded-2xl border bg-card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
-            <tr><th className="px-4 py-3">When</th><th className="px-4 py-3">Action</th><th className="px-4 py-3">Entity</th><th className="px-4 py-3">Actor</th></tr>
-          </thead>
-          <tbody>
-            {(data ?? []).map((l) => (
-              <tr key={l.id} className="border-t">
-                <td className="px-4 py-3 text-xs text-muted-foreground">{new Date(l.created_at).toLocaleString()}</td>
-                <td className="px-4 py-3 font-medium">{l.action}</td>
-                <td className="px-4 py-3">{l.entity}</td>
-                <td className="px-4 py-3 font-mono text-xs">{l.actor?.slice(0, 8) ?? "—"}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3">Action</th>
+                <th className="px-4 py-3">Message</th>
+                <th className="px-4 py-3">By</th>
+                <th className="px-4 py-3">Role</th>
+                <th className="px-4 py-3">Time</th>
               </tr>
-            ))}
-            {data && data.length === 0 && <tr><td colSpan={4} className="px-4 py-10 text-center text-muted-foreground">No activity yet.</td></tr>}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {logs.map((l: {
+                id: string; action: string; message?: string;
+                by_name?: string; by_role?: string; created_at: string;
+              }) => (
+                <tr key={l.id} className="border-t hover:bg-muted/20">
+                  <td className="px-4 py-2.5">
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${ACTION_COLORS[l.action] ?? "text-slate-600 bg-slate-100"}`}>
+                      {l.action}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2.5 text-sm max-w-xs truncate">{l.message ?? "—"}</td>
+                  <td className="px-4 py-2.5 text-sm">{l.by_name ?? "—"}</td>
+                  <td className="px-4 py-2.5 text-xs capitalize text-muted-foreground">{l.by_role ?? "—"}</td>
+                  <td className="px-4 py-2.5 text-xs text-muted-foreground whitespace-nowrap">
+                    {new Date(l.created_at).toLocaleString("en-TZ", { dateStyle: "medium", timeStyle: "short" })}
+                  </td>
+                </tr>
+              ))}
+              {logs.length === 0 && (
+                <tr><td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">No activity recorded yet.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

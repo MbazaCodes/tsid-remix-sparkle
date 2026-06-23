@@ -92,10 +92,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ed6e3acf-9575-4a7c-96eb-bd29ee25c050/id-preview-d0bd4cf0--97776f26-a951-40c9-a4e1-7abf190f60c4.lovable.app-1782249077495.png" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/tsid-logo.png" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/tsid-logo.png" },
+      { rel: "apple-touch-icon", sizes: "192x192", href: "/logo192.png" },
+      { rel: "shortcut icon", href: "/favicon.ico" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {

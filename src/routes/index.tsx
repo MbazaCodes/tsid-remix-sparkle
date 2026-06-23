@@ -25,41 +25,124 @@ function Index() {
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
       <main className="flex-1">
-        {/* Hero */}
-        <section className="tsid-card">
-          <div className="mx-auto max-w-7xl px-4 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+
+        {/* ── HERO ─────────────────────────────────────────────────────── */}
+        <section style={{
+          background: "linear-gradient(135deg, #eef4fb 0%, #dceeff 45%, #e8f5ec 100%)",
+          minHeight: "calc(100vh - 72px)",
+          display: "flex",
+          alignItems: "center",
+        }}>
+          <div style={{
+            maxWidth: 1280,
+            margin: "0 auto",
+            width: "100%",
+            padding: "40px 32px",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 56,
+            alignItems: "center",
+          }}>
+
+            {/* Left: text */}
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-5">
-                <img src={ASSETS.coat} alt="" className="h-4 w-4" />
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "5px 14px", borderRadius: 999,
+                background: "rgba(0,51,102,.09)", color: "#003366",
+                fontSize: 12, fontWeight: 700, marginBottom: 22,
+              }}>
+                <img src={ASSETS.coat} alt="" style={{ height: 16, width: 16 }} />
                 Official · Wizara ya Elimu, Sayansi na Teknolojia
               </div>
-              <h1 className="text-4xl md:text-6xl font-bold text-primary leading-[1.05]" style={{ fontFamily: "var(--font-display)" }}>
+
+              <h1 style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 900,
+                fontSize: "clamp(2.2rem, 3.6vw, 3.5rem)",
+                color: "#003366",
+                lineHeight: 1.06,
+                letterSpacing: -1,
+                marginBottom: 22,
+              }}>
                 One verifiable ID for every student in Tanzania.
               </h1>
-              <p className="mt-5 text-lg text-muted-foreground max-w-xl">
-                TSID is the national platform that lets schools issue, students carry, and the government verify student identification — instantly and securely.
+
+              <p style={{ fontSize: 17, color: "#475569", lineHeight: 1.75, marginBottom: 32, maxWidth: 480 }}>
+                TSID is the national platform that lets schools issue, students carry,
+                and the government verify student identification — instantly and securely.
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 28 }}>
+                <Button asChild size="lg" style={{ background: "#003366", color: "#fff", fontWeight: 700, fontSize: 15, height: 48, paddingLeft: 28, paddingRight: 28 }}>
                   <Link to="/auth">Sign in to the portal</Link>
                 </Button>
-                <Button asChild size="lg" variant="outline">
-                  <Link to="/search"><Search className="h-4 w-4 mr-2" /> Verify a student ID</Link>
+                <Button asChild size="lg" variant="outline" style={{ fontWeight: 600, fontSize: 15, borderColor: "#003366", color: "#003366", height: 48, paddingLeft: 24, paddingRight: 24 }}>
+                  <Link to="/search"><Search style={{ width: 16, height: 16, marginRight: 8 }} /> Verify a student ID</Link>
                 </Button>
               </div>
-              <div className="mt-8 flex items-center gap-6 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-[color:var(--tz-green)]" /> RLS-secured</div>
-                <div className="flex items-center gap-2"><QrCode className="h-4 w-4 text-[color:var(--tz-blue)]" /> Tamper-evident QR</div>
-                <div className="flex items-center gap-2"><img src={ASSETS.flag} alt="" className="h-3" /> Made for Tanzania</div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 22, flexWrap: "wrap" }}>
+                {[
+                  { icon: <ShieldCheck style={{ width: 14, height: 14, color: "#1B8F3A" }} />, label: "RLS-secured" },
+                  { icon: <QrCode style={{ width: 14, height: 14, color: "#007AFF" }} />, label: "Tamper-evident QR" },
+                  { icon: <img src={ASSETS.flag} alt="" style={{ height: 12 }} />, label: "Made for Tanzania" },
+                ].map(({ icon, label }) => (
+                  <div key={label} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#64748b", fontWeight: 600 }}>
+                    {icon} {label}
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="flex justify-center md:justify-end">
+
+            {/* Right: logo badge + ID cards */}
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 24,
+            }}>
+              {/* TSID logo + wordmark */}
+              <div style={{
+                display: "flex", alignItems: "center", gap: 16,
+                background: "rgba(255,255,255,.65)",
+                backdropFilter: "blur(8px)",
+                borderRadius: 16,
+                padding: "14px 22px",
+                boxShadow: "0 2px 16px rgba(0,51,102,.10)",
+                border: "1px solid rgba(0,51,102,.08)",
+              }}>
+                <img
+                  src={ASSETS.logo}
+                  alt="TSID"
+                  style={{
+                    width: 80, height: 80,
+                    objectFit: "contain",
+                    filter: "drop-shadow(0 3px 8px rgba(0,51,102,.20))",
+                  }}
+                />
+                <div>
+                  <div style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 900, fontSize: 32,
+                    color: "#003366", letterSpacing: -0.5, lineHeight: 1,
+                  }}>TSID</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#1B8F3A", letterSpacing: 1, marginTop: 4, textTransform: "uppercase" }}>
+                    Tanzania Student Identification System
+                  </div>
+                  <div style={{ fontSize: 9.5, fontWeight: 600, color: "#64748b", marginTop: 2 }}>
+                    Jamhuri ya Muungano wa Tanzania
+                  </div>
+                </div>
+              </div>
+
+              {/* ID Cards */}
               <HeroCardPreview />
             </div>
           </div>
         </section>
 
-        {/* Features */}
+        {/* ── FEATURES ─────────────────────────────────────────────────── */}
         <section id="features" className="mx-auto max-w-7xl px-4 py-20">
           <h2 className="text-3xl md:text-4xl font-bold text-primary text-center max-w-2xl mx-auto" style={{ fontFamily: "var(--font-display)" }}>
             Built for the whole identification lifecycle
@@ -79,7 +162,7 @@ function Index() {
           </div>
         </section>
 
-        {/* Roles */}
+        {/* ── ROLES ────────────────────────────────────────────────────── */}
         <section id="roles" className="bg-muted/40">
           <div className="mx-auto max-w-7xl px-4 py-20">
             <h2 className="text-3xl md:text-4xl font-bold text-primary text-center" style={{ fontFamily: "var(--font-display)" }}>One platform · three portals</h2>
@@ -95,7 +178,9 @@ function Index() {
                   </div>
                   <div className="mt-4 text-xs uppercase tracking-widest text-muted-foreground">For {r.tag}</div>
                   <p className="mt-2 text-sm text-foreground">{r.body}</p>
-                  <Button asChild variant="link" className="px-0 mt-3 text-primary"><Link to="/auth">Open the {r.tag.toLowerCase()} portal →</Link></Button>
+                  <Button asChild variant="link" className="px-0 mt-3 text-primary">
+                    <Link to="/auth">Open the {r.tag.toLowerCase()} portal →</Link>
+                  </Button>
                 </div>
               ))}
             </div>
@@ -107,6 +192,7 @@ function Index() {
   );
 }
 
+// ── Demo card data ────────────────────────────────────────────────────────────
 const DEMO_DATA = {
   tsid_no: "TSID-2025-A1234567",
   full_name: "Juma A. Mwanza",
@@ -129,17 +215,17 @@ const DEMO_DATA = {
   parent_phone: "+255 712 345 678",
 };
 
-// Scale: render at full size (204×324px each) then shrink via transform
-// so both front+back fit inside ~420px column without overflow
+// ── Hero card preview
+// Cards are 204×324px native — scale up to 0.90 for visibility
+// Two cards side by side: (204×2 + 16gap) × 0.90 ≈ 382px wide
 const CARD_W = 204;
 const CARD_H = 324;
-const SCALE  = 0.72; // both cards side by side: 2×204×0.72 + gap ≈ 310px
+const SCALE  = 0.90;
 
 function HeroCardPreview() {
   return (
     <div style={{
-      // Reserve the shrunk pixel space so layout doesn't collapse
-      width:  Math.round((CARD_W * 2 + 20) * SCALE),
+      width:  Math.round((CARD_W * 2 + 16) * SCALE),
       height: Math.round(CARD_H * SCALE),
       position: "relative",
       flexShrink: 0,
@@ -148,7 +234,7 @@ function HeroCardPreview() {
         position: "absolute",
         top: 0, left: 0,
         display: "flex",
-        gap: 20,
+        gap: 16,
         alignItems: "flex-start",
         transformOrigin: "top left",
         transform: `scale(${SCALE})`,
@@ -160,7 +246,6 @@ function HeroCardPreview() {
   );
 }
 
-// Thin wrappers that render just the card canvases (no labels, no buttons)
 function HeroFront() {
   const [qr, setQr] = useState("");
   useEffect(() => {
@@ -172,6 +257,7 @@ function HeroFront() {
   }, []);
   return <IdCardFrontOnly data={DEMO_DATA} qr={qr} />;
 }
+
 function HeroBack() {
   return <IdCardBackOnly data={DEMO_DATA} />;
 }

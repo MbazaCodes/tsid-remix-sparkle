@@ -83,9 +83,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Official Tanzania Student Identification System. Verify, issue and manage student IDs across schools nationwide." },
       { name: "author", content: "Jamhuri ya Muungano wa Tanzania" },
       { property: "og:title", content: "TSID — Tanzania Student Identification System" },
-      { property: "og:description", content: "Verify, issue and manage student IDs across Tanzania." },
+      { property: "og:description", content: "Official Tanzania Student Identification System. Verify, issue and manage student IDs across schools nationwide." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "TSID — Tanzania Student Identification System" },
+      { name: "twitter:description", content: "Official Tanzania Student Identification System. Verify, issue and manage student IDs across schools nationwide." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ed6e3acf-9575-4a7c-96eb-bd29ee25c050/id-preview-d0bd4cf0--97776f26-a951-40c9-a4e1-7abf190f60c4.lovable.app-1782249077495.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ed6e3acf-9575-4a7c-96eb-bd29ee25c050/id-preview-d0bd4cf0--97776f26-a951-40c9-a4e1-7abf190f60c4.lovable.app-1782249077495.png" },
     ],
     links: [
       {

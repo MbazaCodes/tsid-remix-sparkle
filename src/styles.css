@@ -183,3 +183,38 @@
     color: oklch(0.99 0 0);
   }
 }
+
+/* ── Mobile responsiveness ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Hero grid → single column */
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Footer grid → single column */
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+
+  /* Hide secondary gov branding on small screens */
+  .gov-brand-block {
+    display: none !important;
+  }
+}
+
+/* ── Dark mode overrides for pages ──────────────────────────────── */
+.dark body {
+  background-color: oklch(0.129 0.042 264.695);
+  color: oklch(0.984 0.003 247.858);
+}
+
+/* ── Smooth transitions for theme switching ──────────────────────── */
+*, *::before, *::after {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
+}
+
+/* Exception: don't animate transforms/opacity (breaks animations) */
+[style*="transform"], [style*="scale"] {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease !important;
+}

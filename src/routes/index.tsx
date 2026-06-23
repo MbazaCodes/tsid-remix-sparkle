@@ -39,8 +39,8 @@ function Index() {
             width: "100%",
             padding: "40px 32px",
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: 56,
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 480px), 1fr))",
+            gap: 48,
             alignItems: "center",
           }}>
 

@@ -27,6 +27,24 @@ export type IdCardData = {
   parent_phone?: string | null;
 };
 
+// ── CR80 card dimensions: 53.98mm × 85.60mm @ 96dpi ──────────────────────────
+// 1mm = 3.7795px  →  53.98mm = ~204px, 85.60mm = ~324px
+const W = 204;
+const H = 324;
+
+const C = {
+  navy:   "#003366",
+  green:  "#1B8F3A",
+  yellow: "#F5C400",
+  blue:   "#007AFF",
+  dark:   "#111111",
+  muted:  "#555555",
+  bg:     "#F4F7F9",
+  white:  "#FFFFFF",
+};
+
+const F = { family: "'Inter', 'Plus Jakarta Sans', system-ui, sans-serif" };
+
 function fmtDate(d?: string | null) {
   if (!d) return "—";
   try {
@@ -36,343 +54,451 @@ function fmtDate(d?: string | null) {
   } catch { return d; }
 }
 
-/* ── Tanzania Flag SVG inline ─────────────────────────────────────── */
-function TzFlag() {
+// ── Tanzania Flag (inline SVG, exact proportions) ─────────────────────────────
+function TzFlagSVG({ w = 40, h = 27 }: { w?: number; h?: number }) {
   return (
-    <svg viewBox="0 0 60 40" width="44" height="30" style={{ borderRadius: 3, display: "block", flexShrink: 0 }}>
+    <svg viewBox="0 0 60 40" width={w} height={h}
+      style={{ display: "block", borderRadius: 1, boxShadow: "0 0.4px 1.5px rgba(0,0,0,.18)", flexShrink: 0 }}>
       <rect width="60" height="40" fill="#1EB53A" />
-      <polygon points="0,40 60,0 60,14 0,40" fill="#FCD116" />
-      <polygon points="0,40 60,0 60,8  0,28" fill="#000000" />
-      <polygon points="0,26 46,0 60,0 0,40" fill="#FCD116" />
-      <polygon points="0,20 38,0 46,0 0,26" fill="#00A3DD" />
+      {/* diagonal black band */}
+      <polygon points="0,40 60,0 60,12 0,30" fill="#000" />
+      {/* yellow borders on black band */}
+      <polygon points="0,40 60,0 60,5  0,23" fill="#FCD116" />
+      <polygon points="0,33 53,0 60,0 0,40" fill="#FCD116" />
+      {/* blue triangles */}
+      <polygon points="0,23 53,0 60,0 60,5 0,17" fill="#00A3DD" />
+      <polygon points="0,33 60,5 60,12 0,40" fill="#00A3DD" />
     </svg>
   );
 }
 
-/* ── Seal / stamp ─────────────────────────────────────────────────── */
-function TsidSeal() {
+// ── Official TSID Stamp ───────────────────────────────────────────────────────
+function TsidStamp({ size = 40 }: { size?: number }) {
+  const r = size / 2 - 1;
   return (
-    <svg viewBox="0 0 80 80" width="70" height="70">
-      <circle cx="40" cy="40" r="38" fill="none" stroke="#1a3a6b" strokeWidth="2" />
-      <circle cx="40" cy="40" r="32" fill="none" stroke="#1a3a6b" strokeWidth="1" />
-      <text x="40" y="18" textAnchor="middle" fontSize="5.5" fontWeight="700" fill="#1a3a6b"
-        style={{ fontFamily: "system-ui" }}>TANZANIA STUDENT</text>
-      <text x="40" y="46" textAnchor="middle" fontSize="10" fontWeight="900" fill="#1a3a6b"
-        style={{ fontFamily: "system-ui" }}>TSID</text>
-      <text x="40" y="63" textAnchor="middle" fontSize="4.5" fontWeight="700" fill="#1a3a6b"
-        style={{ fontFamily: "system-ui" }}>IDENTIFICATION</text>
-      <text x="40" y="72" textAnchor="middle" fontSize="4.5" fontWeight="700" fill="#1a3a6b"
-        style={{ fontFamily: "system-ui" }}>SYSTEM</text>
+    <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} style={{ flexShrink: 0 }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={C.navy} strokeWidth={0.9} />
+      <circle cx={size/2} cy={size/2} r={r - 2.5} fill="none" stroke={C.navy} strokeWidth={0.4} />
+      {/* arc text top */}
+      <defs>
+        <path id="arcTop"  d={`M ${size/2 - r + 3},${size/2} a ${r-3},${r-3} 0 0,1 ${(r-3)*2},0`} />
+        <path id="arcBot"  d={`M ${size/2 - r + 3},${size/2} a ${r-3},${r-3} 0 0,0 ${(r-3)*2},0`} />
+      </defs>
+      <text fontSize={3.8} fontWeight="800" fill={C.navy} fontFamily={F.family} letterSpacing={0.4}>
+        <textPath href="#arcTop" startOffset="10%">TANZANIA STUDENT</textPath>
+      </text>
+      <text fontSize={3.8} fontWeight="800" fill={C.navy} fontFamily={F.family} letterSpacing={0.2}>
+        <textPath href="#arcBot" startOffset="18%">IDENTIFICATION SYSTEM</textPath>
+      </text>
+      <text x={size/2} y={size/2 + 2} textAnchor="middle" fontSize={7} fontWeight="900"
+        fill={C.navy} fontFamily={F.family}>TSID</text>
     </svg>
   );
 }
 
-/* ── CARD FRONT ───────────────────────────────────────────────────── */
-function CardFront({ data, qr }: { data: IdCardData; qr: string }) {
-  const W = 320;
-
+// ── School crest badge ────────────────────────────────────────────────────────
+function SchoolBadge({ size = 12 }: { size?: number }) {
   return (
     <div style={{
-      width: W, background: "#fff", borderRadius: 14,
-      boxShadow: "0 8px 32px rgba(0,0,0,.18)", overflow: "hidden",
-      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-      color: "#0f172a", userSelect: "none",
+      width: size, height: size, background: C.navy, borderRadius: 2,
+      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
     }}>
-      {/* Header */}
-      <div style={{
-        background: "linear-gradient(135deg, #0b2d5e 0%, #1a4a8a 100%)",
-        padding: "12px 14px 10px",
-        display: "flex", alignItems: "center", gap: 10,
+      <svg viewBox="0 0 24 24" width={size * 0.65} height={size * 0.65}
+        fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M2 20h20M4 20V10l8-7 8 7v10M9 20v-5h6v5" />
+      </svg>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+//  CARD FRONT
+// ═══════════════════════════════════════════════════════════════════════════════
+function CardFront({ data, qr }: { data: IdCardData; qr: string }) {
+  return (
+    <div style={{
+      width: W, height: H,
+      background: C.white,
+      borderRadius: 12,
+      position: "relative",
+      overflow: "hidden",
+      boxShadow: "0 8px 28px rgba(0,0,0,.13)",
+      border: `0.75px solid #C4CBD3`,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      fontFamily: F.family,
+    }}>
+      {/* ── HEADER ────────────────────────────────────────────────────── */}
+      <header style={{
+        padding: "10px 13px 7px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexShrink: 0,
       }}>
-        <img src={ASSETS.coat} alt="" style={{ height: 38, width: 38, objectFit: "contain", flexShrink: 0 }} />
-        <div style={{ flex: 1 }}>
-          <div style={{ color: "#fff", fontWeight: 900, fontSize: 22, lineHeight: 1, letterSpacing: -0.5 }}>TSID</div>
-          <div style={{ color: "#a3c4dd", fontSize: 8, fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", lineHeight: 1.4 }}>
-            Tanzania Student<br />Identification System
+        <img src={ASSETS.coat} alt="" style={{ width: 38, height: 38, objectFit: "contain", flexShrink: 0 }} />
+        <div style={{ flexGrow: 1, paddingLeft: 8 }}>
+          <div style={{ color: C.navy, fontSize: 22, fontWeight: 900, lineHeight: 0.9, letterSpacing: -0.5 }}>TSID</div>
+          <div style={{ color: C.navy, fontSize: 5.8, fontWeight: 800, letterSpacing: 0.18, lineHeight: 1.15, marginTop: 2 }}>
+            TANZANIA STUDENT<br />IDENTIFICATION SYSTEM
           </div>
         </div>
-        <TzFlag />
-      </div>
+        <TzFlagSVG w={40} h={27} />
+      </header>
 
-      {/* Tanzania flag stripe */}
-      <div style={{ height: 5, background: "linear-gradient(to right, #1EB53A 0%,#1EB53A 33%,#FCD116 33%,#FCD116 40%,#000 40%,#000 60%,#FCD116 60%,#FCD116 67%,#00A3DD 67%,#00A3DD 100%)" }} />
-
-      {/* Body */}
-      <div style={{ padding: "12px 14px 10px", display: "flex", gap: 12 }}>
+      {/* ── PROFILE SECTION ───────────────────────────────────────────── */}
+      <div style={{
+        padding: "0 13px",
+        display: "flex",
+        gap: 11,
+        alignItems: "stretch",
+        flexGrow: 1.5,
+        marginBottom: 2,
+      }}>
         {/* Photo */}
         <div style={{
-          width: 82, height: 106, flexShrink: 0, borderRadius: 6,
-          border: "2px solid #dce8f5", overflow: "hidden",
-          background: "#f0f4fa", display: "flex", alignItems: "center", justifyContent: "center",
+          width: 72, height: 96, borderRadius: 4,
+          overflow: "hidden", border: `0.75px solid #D1D5DB`,
+          flexShrink: 0, background: "#e8edf3",
+          display: "flex", alignItems: "center", justifyContent: "center",
         }}>
           {data.photo_url
             ? <img src={data.photo_url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            : <span style={{ fontSize: 36, opacity: 0.4 }}>👤</span>}
+            : <span style={{ fontSize: 30, opacity: 0.35 }}>👤</span>}
         </div>
 
-        {/* Fields */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ marginBottom: 6 }}>
-            <div style={{ fontSize: 7.5, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: 0.8 }}>TSID NUMBER</div>
-            <div style={{ fontSize: 13, fontWeight: 900, color: "#0b2d5e", fontFamily: "ui-monospace, monospace", letterSpacing: 0.5 }}>
-              {data.tsid_no}
-            </div>
-            <div style={{ height: 2, background: "#1EB53A", borderRadius: 1, marginTop: 2, width: "70%" }} />
+        {/* Identity fields */}
+        <div style={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          paddingTop: 2,
+          paddingBottom: 2,
+        }}>
+          {/* TSID number */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontSize: 5.8, fontWeight: 700, color: C.navy, letterSpacing: 0.1 }}>TSID NUMBER</span>
+            <span style={{
+              fontSize: 9.5, fontWeight: 900, color: C.navy,
+              borderBottom: `1.5px solid ${C.green}`,
+              paddingBottom: 1, display: "block", lineHeight: 1.15,
+              fontFamily: "ui-monospace, monospace",
+              letterSpacing: 0.2,
+            }}>{data.tsid_no}</span>
           </div>
 
+          {/* Standard fields */}
           {[
-            ["FULL NAME", (data.full_name || "—").toUpperCase()],
+            ["FULL NAME",    (data.full_name || "—").toUpperCase()],
             ["DATE OF BIRTH", fmtDate(data.dob)],
-            ["GENDER", (data.gender || "—").toUpperCase()],
-            ["NATIONALITY", (data.nationality || "TANZANIAN").toUpperCase()],
-          ].map(([label, val]) => (
-            <div key={label} style={{ marginBottom: 4 }}>
-              <div style={{ fontSize: 7, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 0.7 }}>{label}</div>
-              <div style={{ fontSize: 10.5, fontWeight: 700, color: "#0f172a", lineHeight: 1.2 }}>{val}</div>
+            ["GENDER",       (data.gender || "—").toUpperCase()],
+            ["NATIONALITY",  (data.nationality || "TANZANIAN").toUpperCase()],
+          ].map(([lbl, val]) => (
+            <div key={lbl} style={{ display: "flex", flexDirection: "column" }}>
+              <span style={{ fontSize: 5.2, fontWeight: 700, color: C.muted, letterSpacing: 0.1 }}>{lbl}</span>
+              <span style={{ fontSize: 7.5, fontWeight: 700, color: C.dark, lineHeight: 1.1 }}>{val}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* School + QR row */}
+      {/* ── LOWER: SCHOOL + QR ────────────────────────────────────────── */}
       <div style={{
-        margin: "0 14px 10px",
-        background: "#f0f4fa", borderRadius: 8, padding: "8px 10px",
-        display: "flex", alignItems: "center", gap: 10,
+        padding: "7px 13px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        flexGrow: 1,
+        background: "#f8fafc",
+        borderTop: `0.5px solid #e2e8f0`,
+        borderBottom: `0.5px solid #e2e8f0`,
       }}>
-        {/* School icon */}
+        {/* School info */}
+        <div style={{ maxWidth: 110 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 4 }}>
+            <SchoolBadge size={14} />
+            <span style={{ fontSize: 6.5, fontWeight: 800, color: C.navy, lineHeight: 1.15 }}>
+              {(data.school_name || "—").toUpperCase()}
+            </span>
+          </div>
+          <div style={{ fontSize: 6, color: C.dark, lineHeight: 1.55, fontWeight: 500 }}>
+            {data.school_code && <><span style={{ fontWeight: 400, color: C.muted }}>SCHOOL ID: </span><span style={{ fontWeight: 700 }}>{data.school_code}</span><br /></>}
+            {data.region    && <><span style={{ fontWeight: 400, color: C.muted }}>REGION: </span><span style={{ fontWeight: 700 }}>{data.region.toUpperCase()}</span><br /></>}
+            {data.district  && <><span style={{ fontWeight: 400, color: C.muted }}>DISTRICT: </span><span style={{ fontWeight: 700 }}>{data.district.toUpperCase()}</span></>}
+          </div>
+        </div>
+
+        {/* QR Code */}
         <div style={{
-          width: 32, height: 32, borderRadius: 8, background: "#0b2d5e",
-          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          display: "flex", flexDirection: "column", alignItems: "center",
+          border: `0.6px solid #CCC`,
+          padding: 2, borderRadius: 3,
+          background: C.white, width: 54, flexShrink: 0,
         }}>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 20h20M4 20V10l8-7 8 7v10M9 20v-5h6v5" />
-          </svg>
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 10, fontWeight: 800, color: "#0b2d5e", lineHeight: 1.2, wordBreak: "break-word" }}>
-            {(data.school_name || "—").toUpperCase()}
-          </div>
-          {data.school_code && (
-            <div style={{ fontSize: 8, color: "#64748b", marginTop: 1 }}>
-              SCHOOL ID: {data.school_code}
-            </div>
-          )}
-          {data.region && (
-            <div style={{ fontSize: 8, color: "#64748b" }}>
-              REGION: {data.region.toUpperCase()}
-              {data.district ? `   DISTRICT: ${data.district.toUpperCase()}` : ""}
-            </div>
-          )}
-        </div>
-        {/* QR */}
-        <div style={{ textAlign: "center", flexShrink: 0 }}>
           {qr
-            ? <img src={qr} alt="QR" style={{ width: 58, height: 58, borderRadius: 4, border: "1px solid #dce8f5" }} />
-            : <div style={{ width: 58, height: 58, background: "#e2e8f0", borderRadius: 4 }} />}
-          <div style={{ fontSize: 6.5, fontWeight: 700, color: "#64748b", marginTop: 2, letterSpacing: 0.5 }}>SCAN TO VERIFY</div>
+            ? <img src={qr} alt="QR" style={{ width: 46, height: 46 }} />
+            : <div style={{ width: 46, height: 46, background: "#eee" }} />}
+          <div style={{ fontSize: 4, fontWeight: 900, color: C.dark, marginTop: 1.5, textAlign: "center", letterSpacing: 0.3 }}>
+            SCAN TO VERIFY
+          </div>
         </div>
       </div>
 
-      {/* Navy footer */}
-      <div style={{
-        background: "#0b2d5e",
-        padding: "8px 14px",
-        display: "flex", justifyContent: "space-around", alignItems: "center",
-      }}>
-        {[
-          { icon: "🛡️", label1: "LIFELONG", label2: "STUDENT ID" },
-          { icon: "🏛️", label1: "NATIONALLY", label2: "RECOGNIZED" },
-          { icon: "✅", label1: "SECURE", label2: "& VERIFIED" },
-        ].map(({ icon, label1, label2 }) => (
-          <div key={label1} style={{ textAlign: "center" }}>
-            <div style={{ fontSize: 14, lineHeight: 1 }}>{icon}</div>
-            <div style={{ fontSize: 6.5, color: "#a3c4dd", fontWeight: 700, marginTop: 2, lineHeight: 1.3 }}>
-              {label1}<br />{label2}
+      {/* ── FOOTER: status bar ────────────────────────────────────────── */}
+      <div style={{ marginTop: "auto", width: "100%", flexShrink: 0 }}>
+        <div style={{
+          width: "100%", height: 28,
+          background: C.navy,
+          display: "flex", justifyContent: "space-around", alignItems: "center",
+          padding: "0 4px",
+        }}>
+          {[
+            ["🛡", "LIFELONG", "STUDENT ID"],
+            ["✦", "NATIONALLY", "RECOGNIZED"],
+            ["✔", "SECURE", "& VERIFIED"],
+          ].map(([icon, l1, l2]) => (
+            <div key={l1} style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 9, color: "#fff", lineHeight: 1 }}>{icon}</div>
+              <div style={{ fontSize: 4, fontWeight: 700, color: "#a3c4dd", lineHeight: 1.3, marginTop: 1 }}>
+                {l1}<br />{l2}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        {/* Flag stripe */}
+        <div style={{ width: "100%", height: 4, display: "flex" }}>
+          <div style={{ flex: 4.5, background: C.green }} />
+          <div style={{ flex: 1,   background: C.yellow }} />
+          <div style={{ flex: 1,   background: "#000" }} />
+          <div style={{ flex: 3.5, background: C.blue }} />
+        </div>
       </div>
-
-      {/* TZ flag stripe bottom */}
-      <div style={{ height: 4, background: "linear-gradient(to right, #1EB53A 0%,#1EB53A 25%,#FCD116 25%,#FCD116 37.5%,#000 37.5%,#000 62.5%,#FCD116 62.5%,#FCD116 75%,#00A3DD 75%,#00A3DD 100%)" }} />
     </div>
   );
 }
 
-/* ── CARD BACK ────────────────────────────────────────────────────── */
+// ═══════════════════════════════════════════════════════════════════════════════
+//  CARD BACK
+// ═══════════════════════════════════════════════════════════════════════════════
 function CardBack({ data }: { data: IdCardData }) {
-  const W = 320;
-
   return (
     <div style={{
-      width: W, background: "#fff", borderRadius: 14,
-      boxShadow: "0 8px 32px rgba(0,0,0,.18)", overflow: "hidden",
-      fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif",
-      color: "#0f172a", userSelect: "none",
+      width: W, height: H,
+      background: C.bg,
+      borderRadius: 12,
+      position: "relative",
+      overflow: "hidden",
+      boxShadow: "0 8px 28px rgba(0,0,0,.13)",
+      border: `0.75px solid #C4CBD3`,
+      display: "flex",
+      flexDirection: "column",
+      fontFamily: F.family,
     }}>
-      {/* Top header — navy with TSID number */}
+      {/* ── HEADER STRIP ──────────────────────────────────────────────── */}
       <div style={{
-        background: "linear-gradient(135deg, #0b2d5e 0%, #1a4a8a 100%)",
-        padding: "12px 16px 10px",
+        background: C.navy, color: C.white,
+        height: 26, lineHeight: "26px",
+        textAlign: "center",
+        fontSize: 11, fontWeight: 700,
+        letterSpacing: 0.5,
+        flexShrink: 0,
+        fontFamily: "ui-monospace, monospace",
       }}>
-        <div style={{ fontSize: 15, fontWeight: 900, color: "#fff", fontFamily: "ui-monospace, monospace", letterSpacing: 0.5 }}>
-          {data.tsid_no}
-        </div>
-        <div style={{ height: 2, background: "#1EB53A", borderRadius: 1, marginTop: 4, width: "60%" }} />
+        {data.tsid_no}
       </div>
 
-      {/* Tanzania flag stripe */}
-      <div style={{ height: 4, background: "linear-gradient(to right, #1EB53A 0%,#1EB53A 33%,#FCD116 33%,#FCD116 40%,#000 40%,#000 60%,#FCD116 60%,#FCD116 67%,#00A3DD 67%,#00A3DD 100%)" }} />
-
-      {/* Student information section */}
-      <div style={{ padding: "10px 14px 8px" }}>
-        <div style={{ fontSize: 9, fontWeight: 800, color: "#0b2d5e", textTransform: "uppercase", letterSpacing: 1, borderBottom: "1.5px solid #1EB53A", paddingBottom: 4, marginBottom: 8 }}>
-          Student Information
-        </div>
-        {[
-          ["DATE OF ENROLLMENT", fmtDate(data.enrollment_date)],
-          ["CURRENT LEVEL",      (data.level || "—").toUpperCase()],
-          ["BLOOD GROUP",        data.blood_group || "—"],
-          ["PHONE (GUARDIAN)",   data.parent_phone || "—"],
-        ].map(([label, val]) => (
-          <div key={label} style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, gap: 8 }}>
-            <div style={{ fontSize: 7.5, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: 0.5, flexShrink: 0 }}>{label}</div>
-            <div style={{ fontSize: 9, fontWeight: 700, color: "#0f172a", textAlign: "right" }}>{val}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Parent / Guardian section */}
-      <div style={{ padding: "0 14px 8px", position: "relative" }}>
-        <div style={{ fontSize: 9, fontWeight: 800, color: "#0b2d5e", textTransform: "uppercase", letterSpacing: 1, borderBottom: "1.5px solid #1EB53A", paddingBottom: 4, marginBottom: 8 }}>
-          Parent / Guardian
-        </div>
-        {/* Seal watermark */}
-        <div style={{ position: "absolute", right: 14, top: 20, opacity: 0.15 }}>
-          <TsidSeal />
-        </div>
-        {[
-          ["NAME",         (data.parent_name || "—").toUpperCase()],
-          ["NIDA NUMBER",  data.parent_nida || "—"],
-          ["RELATIONSHIP", (data.relationship || "—").toUpperCase()],
-          ["PHONE",        data.parent_phone || "—"],
-        ].map(([label, val]) => (
-          <div key={label} style={{ display: "flex", justifyContent: "space-between", marginBottom: 5, gap: 8 }}>
-            <div style={{ fontSize: 7.5, fontWeight: 600, color: "#64748b", textTransform: "uppercase", letterSpacing: 0.5, flexShrink: 0 }}>{label}</div>
-            <div style={{ fontSize: 9, fontWeight: 700, color: "#0f172a", textAlign: "right", maxWidth: 140 }}>{val}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Important notice */}
-      <div style={{ margin: "0 14px 10px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 6, padding: "7px 10px" }}>
-        <div style={{ fontSize: 8, fontWeight: 800, color: "#1EB53A", marginBottom: 4, letterSpacing: 0.5 }}>IMPORTANT</div>
-        {[
-          "This card is the property of the Government of Tanzania.",
-          "It is valid for educational identification nationwide.",
-          "Report loss of this card to your school immediately.",
-          "This card is not transferable.",
-        ].map((t) => (
-          <div key={t} style={{ fontSize: 7.5, color: "#374151", marginBottom: 2, display: "flex", gap: 4 }}>
-            <span style={{ flexShrink: 0 }}>•</span><span>{t}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Verification + issued row */}
-      <div style={{ padding: "6px 14px", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#0b2d5e" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
-          <div>
-            <div style={{ fontSize: 7, fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>VERIFICATION PORTAL</div>
-            <div style={{ fontSize: 8, fontWeight: 800, color: "#0b2d5e" }}>verify.tsid.go.tz</div>
-          </div>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 7, fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>ISSUED ON</div>
-          <div style={{ fontSize: 8, fontWeight: 800, color: "#0b2d5e" }}>{fmtDate(data.issue_date)}</div>
-        </div>
-      </div>
-
-      {/* Dark navy footer */}
+      {/* ── BODY ──────────────────────────────────────────────────────── */}
       <div style={{
-        background: "#0b2d5e", padding: "7px 14px",
-        display: "flex", justifyContent: "space-between", alignItems: "center",
+        padding: "9px 13px",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        flexGrow: 1,
+        justifyContent: "space-between",
+        gap: 6,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#a3c4dd" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          <div style={{ fontSize: 7, color: "#a3c4dd", lineHeight: 1.4 }}>
-            This card contains secure data.<br />Unauthorized use is prohibited by law.
+        {/* Watermark coat of arms */}
+        <img src={ASSETS.coat} alt="" style={{
+          position: "absolute", right: 10, top: 8,
+          width: 72, height: "auto", opacity: 0.045,
+          pointerEvents: "none", userSelect: "none",
+        }} />
+
+        {/* ── Student Information ─────────────────────────────────────── */}
+        <div>
+          <div style={{
+            fontSize: 6, fontWeight: 900, color: C.navy,
+            textTransform: "uppercase",
+            borderBottom: `1px solid ${C.green}`,
+            paddingBottom: 1.5, marginBottom: 4,
+            letterSpacing: 0.2,
+          }}>Student Information</div>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <tbody>
+              {[
+                ["Date of Enrollment", fmtDate(data.enrollment_date)],
+                ["Current Level",      (data.level || "—").toUpperCase()],
+                ["Blood Group",        data.blood_group || "—"],
+                ["Phone (Guardian)",   data.parent_phone || "—"],
+              ].map(([lbl, val]) => (
+                <tr key={lbl}>
+                  <td style={{ fontSize: 5.5, fontWeight: 700, color: C.muted, textTransform: "uppercase", paddingBottom: 3, width: 80, verticalAlign: "middle" }}>{lbl}</td>
+                  <td style={{ fontSize: 6.2, fontWeight: 700, color: C.dark, paddingBottom: 3, verticalAlign: "middle" }}>{val}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* ── Parent / Guardian ───────────────────────────────────────── */}
+        <div>
+          <div style={{
+            fontSize: 6, fontWeight: 900, color: C.navy,
+            textTransform: "uppercase",
+            borderBottom: `1px solid ${C.green}`,
+            paddingBottom: 1.5, marginBottom: 4,
+            letterSpacing: 0.2,
+          }}>Parent / Guardian</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", flexGrow: 1 }}>
+              <tbody>
+                {[
+                  ["Name",         (data.parent_name || "—").toUpperCase()],
+                  ["NIDA Number",  data.parent_nida || "—"],
+                  ["Relationship", (data.relationship || "—").toUpperCase()],
+                  ["Phone",        data.parent_phone || "—"],
+                ].map(([lbl, val]) => (
+                  <tr key={lbl}>
+                    <td style={{ fontSize: 5.5, fontWeight: 700, color: C.muted, textTransform: "uppercase", paddingBottom: 3, width: 80, verticalAlign: "middle" }}>{lbl}</td>
+                    <td style={{ fontSize: 6.2, fontWeight: 700, color: C.dark, paddingBottom: 3, verticalAlign: "middle" }}>{val}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {/* Official stamp */}
+            <div style={{ flexShrink: 0 }}>
+              <TsidStamp size={44} />
+            </div>
           </div>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontSize: 7, color: "#a3c4dd", fontWeight: 700 }}>JAMHURI YA MUUNGANO</div>
-          <div style={{ fontSize: 7, color: "#a3c4dd", fontWeight: 700 }}>WA TANZANIA</div>
+
+        {/* ── Important notice ────────────────────────────────────────── */}
+        <div style={{
+          border: `0.6px solid #C6E2D0`,
+          background: "#EBF7EE",
+          borderRadius: 2.5,
+          padding: "4px 6px",
+        }}>
+          <div style={{ fontSize: 6, fontWeight: 900, color: C.green, textTransform: "uppercase", marginBottom: 2 }}>
+            Important
+          </div>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {[
+              "This card is the property of the Government of Tanzania.",
+              "It is valid for educational identification nationwide.",
+              "Report loss of this card to your school immediately.",
+              "This card is not transferable.",
+            ].map((t) => (
+              <li key={t} style={{ fontSize: 5, color: "#222", fontWeight: 500, lineHeight: 1.4, paddingLeft: 5, position: "relative", marginBottom: 1 }}>
+                <span style={{ position: "absolute", left: 0 }}>•</span>{t}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* ── Verification footer row ──────────────────────────────────── */}
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "flex-end",
+          paddingTop: 2,
+        }}>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontSize: 5, fontWeight: 700, color: C.muted, textTransform: "uppercase" }}>Verification Portal</span>
+            <span style={{ fontSize: 6.5, fontWeight: 700, color: C.blue }}>verify.tsid.go.tz</span>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <span style={{ fontSize: 5, fontWeight: 700, color: C.muted, textTransform: "uppercase", display: "block" }}>Issued On</span>
+            <span style={{ fontSize: 6.5, fontWeight: 700, color: C.navy }}>{fmtDate(data.issue_date)}</span>
+          </div>
         </div>
       </div>
 
-      {/* TZ flag stripe bottom */}
-      <div style={{ height: 4, background: "linear-gradient(to right, #1EB53A 0%,#1EB53A 25%,#FCD116 25%,#FCD116 37.5%,#000 37.5%,#000 62.5%,#FCD116 62.5%,#FCD116 75%,#00A3DD 75%,#00A3DD 100%)" }} />
+      {/* ── BASE SECURITY STRIP ───────────────────────────────────────── */}
+      <div style={{
+        marginTop: "auto",
+        width: "100%", height: 22,
+        background: C.navy,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "0 10px",
+        flexShrink: 0,
+      }}>
+        <div style={{ fontSize: 5, lineHeight: 1.25, fontWeight: 500, color: C.white, maxWidth: "62%" }}>
+          <strong style={{ fontWeight: 700 }}>This card contains secure data.</strong><br />
+          Unauthorized use is prohibited by law.
+        </div>
+        <div style={{ fontSize: 5.2, fontWeight: 700, color: C.white, textAlign: "right", lineHeight: 1.25 }}>
+          JAMHURI YA MUUNGANO<br />WA TANZANIA
+        </div>
+      </div>
     </div>
   );
 }
 
-/* ── Main export ──────────────────────────────────────────────────── */
+// ═══════════════════════════════════════════════════════════════════════════════
+//  PUBLIC EXPORT
+// ═══════════════════════════════════════════════════════════════════════════════
 export function IdCard({ data, showBack = true, downloadable = true }: {
   data: IdCardData;
   showBack?: boolean;
   downloadable?: boolean;
 }) {
-  const [qr, setQr] = useState<string>("");
+  const [qr, setQr] = useState("");
   const frontRef = useRef<HTMLDivElement>(null);
   const backRef  = useRef<HTMLDivElement>(null);
 
   const verifyUrl = typeof window !== "undefined"
     ? `${window.location.origin}/search?id=${encodeURIComponent(data.tsid_no)}`
-    : `https://verify.tsid.go.tz/search?id=${data.tsid_no}`;
+    : `https://verify.tsid.go.tz/id/${data.tsid_no}`;
 
   useEffect(() => {
     QRCode.toDataURL(verifyUrl, {
-      margin: 1, width: 180,
-      color: { dark: "#0b2d5e", light: "#ffffff" },
+      margin: 1, width: 200,
+      color: { dark: "#000000", light: "#ffffff" },
+      errorCorrectionLevel: "M",
     }).then(setQr).catch(() => setQr(""));
   }, [verifyUrl]);
 
-  async function downloadSide(ref: React.RefObject<HTMLDivElement | null>, label: string) {
+  async function downloadSide(ref: React.RefObject<HTMLDivElement | null>, side: string) {
     if (!ref.current) return;
     const png = await toPng(ref.current, { pixelRatio: 3, cacheBust: true });
     const a = document.createElement("a");
-    a.href = png;
-    a.download = `TSID-${data.tsid_no}-${label}.png`;
-    a.click();
+    a.href = png; a.download = `TSID-${data.tsid_no}-${side}.png`; a.click();
   }
 
   return (
-    <div className="space-y-6">
-      {/* Front */}
+    <div style={{ display: "flex", gap: 28, flexWrap: "wrap", alignItems: "flex-start" }}>
+      {/* FRONT */}
       <div>
-        <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">FRONT</div>
-        <div ref={frontRef}>
-          <CardFront data={data} qr={qr} />
-        </div>
+        <div style={{ fontSize: 9, fontWeight: 800, color: "#888", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6, textAlign: "center" }}>FRONT</div>
+        <div ref={frontRef}><CardFront data={data} qr={qr} /></div>
         {downloadable && (
-          <Button onClick={() => downloadSide(frontRef, "FRONT")} variant="secondary" size="sm" className="mt-2">
-            <Download className="h-4 w-4 mr-2" /> Download Front
+          <Button onClick={() => downloadSide(frontRef, "FRONT")} variant="secondary" size="sm" className="mt-2 w-full">
+            <Download className="h-3.5 w-3.5 mr-2" /> Download Front
           </Button>
         )}
       </div>
 
-      {/* Back */}
+      {/* BACK */}
       {showBack && (
         <div>
-          <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">BACK</div>
-          <div ref={backRef}>
-            <CardBack data={data} />
-          </div>
+          <div style={{ fontSize: 9, fontWeight: 800, color: "#888", textTransform: "uppercase", letterSpacing: 1, marginBottom: 6, textAlign: "center" }}>BACK</div>
+          <div ref={backRef}><CardBack data={data} /></div>
           {downloadable && (
-            <Button onClick={() => downloadSide(backRef, "BACK")} variant="secondary" size="sm" className="mt-2">
-              <Download className="h-4 w-4 mr-2" /> Download Back
+            <Button onClick={() => downloadSide(backRef, "BACK")} variant="secondary" size="sm" className="mt-2 w-full">
+              <Download className="h-3.5 w-3.5 mr-2" /> Download Back
             </Button>
           )}
         </div>

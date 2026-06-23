@@ -52,17 +52,8 @@ function Index() {
                 <div className="flex items-center gap-2"><img src={ASSETS.flag} alt="" className="h-3" /> Made for Tanzania</div>
               </div>
             </div>
-            <div className="flex justify-center md:justify-end">
-              <IdCard data={{
-                tsid_no: "TSID-26-100482",
-                full_name: "Asha Mwanga Juma",
-                school_name: "Azania Secondary School",
-                region: "Dar es Salaam",
-                dob: "2008-03-14",
-                gender: "F",
-                status: "active",
-                photo_url: null,
-              }} />
+            <div className="flex justify-center md:justify-end overflow-x-auto">
+              <HeroCardPreview />
             </div>
           </div>
         </section>
@@ -111,6 +102,36 @@ function Index() {
         </section>
       </main>
       <SiteFooter />
+    </div>
+  );
+}
+
+const DEMO_DATA = {
+  tsid_no: "TSID-2025-A1234567",
+  full_name: "Juma A. Mwanza",
+  school_name: "Shule Ya Msingi Mwanga",
+  school_code: "PS1234",
+  region: "Dar es Salaam",
+  district: "Kinondoni",
+  dob: "2014-05-15",
+  gender: "Male",
+  nationality: "Tanzanian",
+  photo_url: null,
+  status: "active",
+  level: "Primary School",
+  blood_group: "O+",
+  enrollment_date: "2020-01-10",
+  issue_date: "2025-05-20",
+  parent_name: "Aishatu Juma",
+  parent_nida: "19901234567890123",
+  relationship: "Mother",
+  parent_phone: "+255 712 345 678",
+};
+
+function HeroCardPreview() {
+  return (
+    <div style={{ display: "flex", gap: 20, flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start" }}>
+      <IdCard data={DEMO_DATA} showBack={true} downloadable={false} />
     </div>
   );
 }

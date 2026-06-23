@@ -2,223 +2,160 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ASSETS, roleHome, type Role } from "@/lib/tsid";
 import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck, GraduationCap, Building2 } from "lucide-react";
 
-const searchSchema = z.object({ role: z.enum(["gov", "school", "student"]).optional() });
-
-export const Route = createFileRoute("/auth")({
-  validateSearch: searchSchema,
-  head: () => ({
-    meta: [
-      { title: "Sign in — TSID" },
-      { name: "description", content: "Sign in to the Tanzania Student Identification System." },
-    ],
-  }),
-  component: AuthPage,
-});
-
-const ROLE_LABELS: Record<Role, { label: string; desc: string; icon: typeof ShieldCheck }> = {
-  gov: { label: "Government", desc: "Wizara ya Elimu officer", icon: ShieldCheck },
-  school: { label: "School Admin", desc: "School administrator", icon: Building2 },
-  student: { label: "Student / Parent", desc: "Student or guardian", icon: GraduationCap },
-};
+const searchSchema = z.object({ role: z.enum(["gov","school","student"]).optional() });
+export const Route = createFileRoute("/auth")({ validateSearch: searchSchema, component: AuthPage });
 
 function AuthPage() {
   const { role: defaultRole } = Route.useSearch();
   const navigate = useNavigate();
+  const { t, theme } = useTheme();
+  const isDark = theme === "dark";
   const [selectedRole, setSelectedRole] = useState<Role>(defaultRole ?? "school");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState(""); const [password, setPassword] = useState("");
+  const [showPass, setShowPass] = useState(false); const [loading, setLoading] = useState(false);
+
+  const ROLE_DEFS: Record<Role, { label: string; desc: string; icon: typeof ShieldCheck }> = {
+    gov:     { label: t("role_gov"),     desc: t("role_gov_desc"),     icon: ShieldCheck },
+    school:  { label: t("role_school"),  desc: t("role_school_desc"),  icon: Building2 },
+    student: { label: t("role_student"), desc: t("role_student_desc"), icon: GraduationCap },
+  };
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        const { data: roleRow } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.session.user.id)
-          .maybeSingle();
-        navigate({ to: roleHome(roleRow?.role as Role), replace: true });
+        const { data: r } = await supabase.from("user_roles").select("role").eq("user_id", data.session.user.id).maybeSingle();
+        navigate({ to: roleHome(r?.role as Role), replace: true });
       }
     })();
   }, [navigate]);
 
   async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-
+    e.preventDefault(); setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      toast.error(error.message || "Invalid email or password.");
-      setLoading(false);
-      return;
-    }
-
-    const { data: roleRow } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.user!.id)
-      .maybeSingle();
-
-    const actualRole = roleRow?.role as Role | null;
-    if (!actualRole) {
-      toast.error("No TSID profile found. Contact your administrator.");
-      await supabase.auth.signOut();
-      setLoading(false);
-      return;
-    }
-
-    if (actualRole !== selectedRole) {
-      toast.error(`This account is registered as "${actualRole}". Redirecting…`);
-      setTimeout(() => navigate({ to: roleHome(actualRole), replace: true }), 900);
-      setLoading(false);
-      return;
-    }
-
+    if (error) { toast.error(error.message); setLoading(false); return; }
+    const { data: r } = await supabase.from("user_roles").select("role").eq("user_id", data.user!.id).maybeSingle();
+    const actualRole = r?.role as Role | null;
+    if (!actualRole) { toast.error("No TSID profile found. Contact your administrator."); await supabase.auth.signOut(); setLoading(false); return; }
+    if (actualRole !== selectedRole) { toast.error(`Account is "${actualRole}". Redirecting…`); setTimeout(() => navigate({ to: roleHome(actualRole), replace: true }), 900); setLoading(false); return; }
     navigate({ to: roleHome(actualRole), replace: true });
   }
 
-  const RoleIcon = ROLE_LABELS[selectedRole].icon;
+  const bg   = isDark ? "#0f172a" : "#f0f4fa";
+  const card = isDark ? "#1e293b" : "#fff";
+  const text = isDark ? "#e2e8f0" : "#003366";
+  const sub  = isDark ? "#94a3b8" : "#64748b";
+  const bdr  = isDark ? "rgba(255,255,255,.08)" : "#e2e8f0";
 
   return (
-    <div className="min-h-screen grid md:grid-cols-2">
+    <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: "1fr 1fr", background: bg }}>
       {/* Left panel */}
-      <div className="hidden md:flex flex-col justify-between bg-sidebar text-sidebar-foreground p-10">
+      <div className="hidden md:flex flex-col justify-between" style={{ background: "#003366", color: "#fff", padding: 40 }}>
         <div className="tz-flag-stripe -mx-10 -mt-10" />
-        <Link to="/" className="flex items-center gap-3 mt-4">
-          <img src={ASSETS.logo} className="h-12 w-12" alt="" />
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", marginTop: 16 }}>
+          <img src={ASSETS.logo} alt="" style={{ height: 52, width: 52, objectFit: "contain" }} />
           <div>
-            <div className="font-bold text-lg" style={{ fontFamily: "var(--font-display)" }}>TSID</div>
-            <div className="text-xs opacity-70">Tanzania Student Identification System</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, color: "#fff" }}>TSID</div>
+            <div style={{ fontSize: 10, color: "#a3c4dd", letterSpacing: 0.8 }}>Tanzania Student ID</div>
           </div>
         </Link>
         <div>
-          <h2 className="text-3xl font-bold leading-tight" style={{ fontFamily: "var(--font-display)" }}>
-            Credentials are issued<br />by your administrator.
+          <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "clamp(1.6rem,2.5vw,2.2rem)", lineHeight: 1.15, marginBottom: 14 }}>
+            {t("auth_subtitle")}
           </h2>
-          <p className="mt-3 text-sm opacity-80 max-w-md">
-            There is no self-registration. Government officers create school accounts.
-            Schools create student accounts. Students receive their login from their school.
+          <p style={{ fontSize: 14, opacity: 0.75, lineHeight: 1.7, maxWidth: 380 }}>
+            {t("auth_no_cred")} {t("auth_schools_hint")}
           </p>
-          <div className="mt-6 space-y-3 text-sm">
+          <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 10 }}>
             {(["gov","school","student"] as Role[]).map((r) => {
-              const M = ROLE_LABELS[r];
+              const M = ROLE_DEFS[r];
               return (
-                <div key={r} className="flex items-center gap-3 opacity-80">
-                  <M.icon className="h-4 w-4 flex-shrink-0" />
-                  <span><strong>{M.label}</strong> — {M.desc}</span>
+                <div key={r} style={{ display: "flex", alignItems: "center", gap: 10, opacity: 0.8 }}>
+                  <M.icon style={{ width: 15, height: 15, flexShrink: 0 }} />
+                  <span style={{ fontSize: 13 }}><strong>{M.label}</strong> — {M.desc}</span>
                 </div>
               );
             })}
           </div>
         </div>
-        <div className="flex items-center gap-3 text-xs opacity-70">
-          <img src={ASSETS.coat} className="h-10 w-10" alt="" />
-          Uhuru na Umoja
+        <div style={{ display: "flex", alignItems: "center", gap: 10, opacity: 0.6, fontSize: 12 }}>
+          <img src={ASSETS.coat} style={{ height: 32, width: 32 }} alt="" />
+          {t("uhuru")}
         </div>
       </div>
 
-      {/* Right panel — login form */}
-      <div className="flex items-center justify-center p-6 md:p-10 bg-background">
-        <div className="w-full max-w-md space-y-6">
+      {/* Right panel */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 24px", background: bg }}>
+        <div style={{ width: "100%", maxWidth: 420 }}>
           {/* Mobile logo */}
-          <div className="flex md:hidden items-center gap-3">
-            <img src={ASSETS.logo} className="h-10 w-10" alt="" />
+          <div className="flex md:hidden items-center gap-3 mb-6">
+            <img src={ASSETS.logo} style={{ height: 44, width: 44 }} alt="" />
             <div>
-              <div className="font-bold" style={{ fontFamily: "var(--font-display)" }}>TSID Portal</div>
-              <div className="text-xs text-muted-foreground">Tanzania Student Identification</div>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18, color: text }}>TSID</div>
+              <div style={{ fontSize: 10, color: sub }}>Tanzania Student ID</div>
             </div>
           </div>
 
-          <div>
-            <h1 className="text-2xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>
-              Sign in
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Use the credentials issued to you by your administrator.
-            </p>
-          </div>
+          <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 26, color: text, marginBottom: 6 }}>{t("auth_title")}</h1>
+          <p style={{ fontSize: 13.5, color: sub, marginBottom: 24 }}>{t("auth_subtitle")}</p>
 
           {/* Role selector */}
-          <div className="grid grid-cols-3 gap-2">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 24 }}>
             {(["gov","school","student"] as Role[]).map((r) => {
-              const M = ROLE_LABELS[r];
-              const active = selectedRole === r;
+              const M = ROLE_DEFS[r]; const active = selectedRole === r;
               return (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setSelectedRole(r)}
-                  className={`flex flex-col items-center gap-1.5 rounded-xl border p-3 text-xs font-semibold transition ${
-                    active
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                  }`}
-                >
-                  <M.icon className="h-5 w-5" />
+                <button key={r} type="button" onClick={() => setSelectedRole(r)} style={{
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 5,
+                  padding: "12px 6px", borderRadius: 12,
+                  border: `2px solid ${active ? "#003366" : bdr}`,
+                  background: active ? (isDark ? "rgba(0,51,102,.3)" : "#eef4fb") : card,
+                  color: active ? text : sub,
+                  cursor: "pointer", fontSize: 11.5, fontWeight: active ? 700 : 500,
+                  transition: "all .15s",
+                }}>
+                  <M.icon style={{ width: 18, height: 18 }} />
                   {M.label}
                 </button>
               );
             })}
           </div>
 
-          <form onSubmit={submit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label>Email address</Label>
-              <Input
-                type="email"
-                autoComplete="email"
-                placeholder="you@tsid.go.tz"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+          <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div>
+              <Label style={{ color: sub, fontSize: 12, fontWeight: 700, marginBottom: 6, display: "block" }}>{t("email_label")}</Label>
+              <Input type="email" autoComplete="email" placeholder="you@tsid.go.tz" value={email} onChange={(e) => setEmail(e.target.value)} required
+                style={{ background: card, borderColor: bdr, color: text, height: 44 }} />
             </div>
-            <div className="space-y-1.5">
-              <Label>Password</Label>
-              <div className="relative">
-                <Input
-                  type={showPass ? "text" : "password"}
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  tabIndex={-1}
-                >
-                  {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            <div>
+              <Label style={{ color: sub, fontSize: 12, fontWeight: 700, marginBottom: 6, display: "block" }}>{t("password_label")}</Label>
+              <div style={{ position: "relative" }}>
+                <Input type={showPass ? "text" : "password"} autoComplete="current-password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required
+                  style={{ background: card, borderColor: bdr, color: text, height: 44, paddingRight: 40 }} />
+                <button type="button" onClick={() => setShowPass(!showPass)} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", color: sub }}>
+                  {showPass ? <EyeOff style={{ width: 16, height: 16 }} /> : <Eye style={{ width: 16, height: 16 }} />}
                 </button>
               </div>
             </div>
-
-            <Button type="submit" className="w-full bg-primary" disabled={loading}>
-              {loading ? "Signing in…" : `Sign in as ${ROLE_LABELS[selectedRole].label}`}
+            <Button type="submit" disabled={loading} style={{ background: "#003366", color: "#fff", fontWeight: 700, height: 46, fontSize: 14 }}>
+              {loading ? t("signing_in") : `${t("sign_in_as")} ${ROLE_DEFS[selectedRole].label}`}
             </Button>
           </form>
 
-          <div className="rounded-xl border bg-muted/40 p-4 text-xs text-muted-foreground space-y-1">
-            <p className="font-semibold text-foreground">Don't have credentials?</p>
-            <p><strong>Schools:</strong> Contact the Ministry of Education (Gov) to register.</p>
-            <p><strong>Students:</strong> Ask your school administrator for your login details.</p>
+          <div style={{ marginTop: 20, borderRadius: 12, border: `1px solid ${bdr}`, background: isDark ? "#1e293b" : "#f8fafc", padding: 16, fontSize: 12.5, color: sub, lineHeight: 1.6 }}>
+            <p style={{ fontWeight: 700, color: text, marginBottom: 6 }}>{t("auth_no_cred")}</p>
+            <p>{t("auth_schools_hint")}</p>
+            <p>{t("auth_students_hint")}</p>
           </div>
-
-          <div className="text-center text-xs text-muted-foreground">
-            <Link to="/" className="hover:underline">← Back to home</Link>
+          <div style={{ textAlign: "center", marginTop: 16 }}>
+            <Link to="/" style={{ fontSize: 12, color: sub, textDecoration: "none" }}>{t("auth_back_home")}</Link>
           </div>
         </div>
       </div>

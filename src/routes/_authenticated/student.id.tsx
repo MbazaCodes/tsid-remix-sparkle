@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useTheme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { IdCard } from "@/components/tsid/id-card";
@@ -9,6 +10,7 @@ import { Printer } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/student/id")({ component: Page });
 
 function Page() {
+  const { t } = useTheme();
   const me = useCurrentUser();
   const { data: student } = useQuery({
     enabled: !!me.userId,

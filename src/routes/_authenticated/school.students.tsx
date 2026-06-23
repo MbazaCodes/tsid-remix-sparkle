@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTheme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { useState } from "react";
@@ -22,6 +23,7 @@ function genStudentPassword() {
 
 function Page() {
   const me = useCurrentUser();
+  const { t } = useTheme();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -81,7 +83,7 @@ function Page() {
 
       <Input
         className="max-w-sm"
-        placeholder="Search by name or TSID…"
+        placeholder={t("search_student")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
@@ -109,7 +111,7 @@ function Page() {
               ))}
               {filtered.length === 0 && (
                 <tr><td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
-                  {search ? "No students match your search." : 'No students yet. Click "Create student" to register one.'}
+                  {search ? "No students match your search." : 'No students yet. Click t("create_student_btn") to register one.'}
                 </td></tr>
               )}
             </tbody>
@@ -186,7 +188,7 @@ function CreateStudentForm({
 }) {
   const [fullName, setFullName] = useState("");
   const [dob, setDob] = useState("");
-  const [gender, setGender] = useState("Male");
+  const [gender, setGender] = useState(t("male"));
   const [nationality, setNationality] = useState("Tanzanian");
   const [level, setLevel] = useState("");
   const [enrollmentDate, setEnrollmentDate] = useState("");
@@ -340,8 +342,8 @@ function CreateStudentForm({
             <Select value={gender} onValueChange={setGender}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="Male">Male</SelectItem>
-                <SelectItem value="Female">Female</SelectItem>
+                <SelectItem value="Male">{t("male")}</SelectItem>
+                <SelectItem value="Female">{t("female")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -471,7 +473,7 @@ function CreateStudentForm({
       </div>
 
       <Button type="submit" className="w-full bg-primary" disabled={loading}>
-        {loading ? "Creating student…" : "💾 Create Student & Issue TSID"}
+        {loading ? t("creating") : t("create_submit")}
       </Button>
     </form>
   );

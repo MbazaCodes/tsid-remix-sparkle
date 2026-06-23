@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useTheme } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ function InfoRow({ label, value, mono }: { label: string; value: string; mono?: 
 
 function Page() {
   const me = useCurrentUser();
+  const { t } = useTheme();
 
   const { data: student } = useQuery({
     enabled: !!me.userId,

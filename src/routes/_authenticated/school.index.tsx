@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "@/lib/theme";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Users, GraduationCap, BadgeCheck, AlertTriangle, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ export const Route = createFileRoute("/_authenticated/school/")({ component: Pag
 
 function Page() {
   const me = useCurrentUser();
+  const { t } = useTheme();
 
   const { data: school } = useQuery({
     enabled: !!me.schoolId,
@@ -61,9 +63,9 @@ function Page() {
   });
 
   const tiles = [
-    { label: "Total Students", value: students.length, icon: Users, color: "var(--tz-navy)" },
-    { label: "Active IDs", value: active, icon: BadgeCheck, color: "var(--tz-green)" },
-    { label: "Pending Applications", value: pendingApps.length, icon: GraduationCap, color: "var(--tz-gold)" },
+    { label: t("total_students"), value: students.length, icon: Users, color: "var(--tz-navy)" },
+    { label: t("active_ids"), value: active, icon: BadgeCheck, color: "var(--tz-green)" },
+    { label: t("pending_apps"), value: pendingApps.length, icon: GraduationCap, color: "var(--tz-gold)" },
   ];
 
   return (

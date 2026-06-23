@@ -264,17 +264,7 @@ export type Database = {
       }
     }
     Views: {
-      students_public: {
-        Row: {
-          full_name: string | null
-          photo_url: string | null
-          region: string | null
-          school_name: string | null
-          status: Database["public"]["Enums"]["student_status"] | null
-          tsid_no: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       current_school_id: { Args: never; Returns: string }
@@ -284,6 +274,17 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      search_student: {
+        Args: { _tsid_no: string }
+        Returns: {
+          full_name: string
+          photo_url: string
+          region: string
+          school_name: string
+          status: Database["public"]["Enums"]["student_status"]
+          tsid_no: string
+        }[]
       }
     }
     Enums: {

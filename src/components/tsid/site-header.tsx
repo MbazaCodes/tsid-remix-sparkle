@@ -109,13 +109,6 @@ export function SiteHeader() {
             transition: "all .15s",
           }}>{t("signin")}</Link>
 
-          {/* Get started — desktop */}
-          <Link to="/auth" className="hidden md:inline-flex" style={{
-            padding: "7px 16px", borderRadius: 8, fontSize: 13.5, fontWeight: 700,
-            background: "#1B8F3A", color: "#fff", textDecoration: "none",
-            transition: "opacity .15s",
-          }}>{t("getstarted")}</Link>
-
           {/* Hamburger */}
           <button className="md:hidden" onClick={() => setOpen(!open)}
             style={{ padding: 6, borderRadius: 8, border: `1px solid ${border}`, background: "transparent", cursor: "pointer", color: sub }}>
@@ -142,17 +135,12 @@ export function SiteHeader() {
               )
             )}
           </nav>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10 }}>
             <Link to="/auth" onClick={() => setOpen(false)} style={{
               flex: 1, textAlign: "center", padding: "11px", borderRadius: 10,
-              border: `1.5px solid ${text}`, color: text, textDecoration: "none",
-              fontSize: 14, fontWeight: 600,
-            }}>{t("signin")}</Link>
-            <Link to="/auth" onClick={() => setOpen(false)} style={{
-              flex: 1, textAlign: "center", padding: "11px", borderRadius: 10,
-              background: "#1B8F3A", color: "#fff", textDecoration: "none",
+              background: "#003366", color: "#fff", textDecoration: "none",
               fontSize: 14, fontWeight: 700,
-            }}>{t("getstarted")}</Link>
+            }}>{t("signin")}</Link>
           </div>
           {/* Gov branding mobile */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 16, paddingTop: 16, borderTop: `1px solid ${border}` }}>

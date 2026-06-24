@@ -14,283 +14,642 @@ export type Database = {
   }
   public: {
     Tables: {
-      applications: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          id: string
-          notes: string | null
-          status: Database["public"]["Enums"]["app_status"]
-          student_id: string
-          type: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          notes?: string | null
-          status?: Database["public"]["Enums"]["app_status"]
-          student_id: string
-          type: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          id?: string
-          notes?: string | null
-          status?: Database["public"]["Enums"]["app_status"]
-          student_id?: string
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "applications_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      audit_logs: {
+      activity_logs: {
         Row: {
           action: string
-          actor: string | null
+          by_name: string | null
+          by_ref: string | null
+          by_role: string | null
           created_at: string
-          entity: string | null
           id: string
-          meta: Json | null
+          ip_address: string | null
+          message: string | null
         }
         Insert: {
           action: string
-          actor?: string | null
+          by_name?: string | null
+          by_ref?: string | null
+          by_role?: string | null
           created_at?: string
-          entity?: string | null
           id?: string
-          meta?: Json | null
+          ip_address?: string | null
+          message?: string | null
         }
         Update: {
           action?: string
-          actor?: string | null
+          by_name?: string | null
+          by_ref?: string | null
+          by_role?: string | null
           created_at?: string
-          entity?: string | null
           id?: string
-          meta?: Json | null
+          ip_address?: string | null
+          message?: string | null
         }
         Relationships: []
+      }
+      admin_users: {
+        Row: {
+          auth_uid: string | null
+          created_at: string
+          email: string
+          id: string
+          ministry: string | null
+          name: string
+          password: string
+          phone: string | null
+          ref: string | null
+          region: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          status: Database["public"]["Enums"]["account_status"]
+          updated_at: string
+        }
+        Insert: {
+          auth_uid?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          ministry?: string | null
+          name: string
+          password: string
+          phone?: string | null
+          ref?: string | null
+          region?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: Database["public"]["Enums"]["account_status"]
+          updated_at?: string
+        }
+        Update: {
+          auth_uid?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          ministry?: string | null
+          name?: string
+          password?: string
+          phone?: string | null
+          ref?: string | null
+          region?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: Database["public"]["Enums"]["account_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      applications: {
+        Row: {
+          blood_group: string | null
+          decided_at: string | null
+          district: string
+          dob: string | null
+          enrollment_date: string | null
+          fullname: string
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          id: string
+          level: string
+          nationality: string | null
+          parent_name: string | null
+          parent_nida: string | null
+          parent_phone: string | null
+          photo: string | null
+          region: string
+          reject_reason: string | null
+          relationship: string | null
+          school_code: string
+          school_contact: string | null
+          school_name: string | null
+          status: Database["public"]["Enums"]["application_status"]
+          submitted_at: string
+          tsid: string | null
+          ward: string
+        }
+        Insert: {
+          blood_group?: string | null
+          decided_at?: string | null
+          district: string
+          dob?: string | null
+          enrollment_date?: string | null
+          fullname: string
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          id?: string
+          level: string
+          nationality?: string | null
+          parent_name?: string | null
+          parent_nida?: string | null
+          parent_phone?: string | null
+          photo?: string | null
+          region: string
+          reject_reason?: string | null
+          relationship?: string | null
+          school_code: string
+          school_contact?: string | null
+          school_name?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string
+          tsid?: string | null
+          ward: string
+        }
+        Update: {
+          blood_group?: string | null
+          decided_at?: string | null
+          district?: string
+          dob?: string | null
+          enrollment_date?: string | null
+          fullname?: string
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          id?: string
+          level?: string
+          nationality?: string | null
+          parent_name?: string | null
+          parent_nida?: string | null
+          parent_phone?: string | null
+          photo?: string | null
+          region?: string
+          reject_reason?: string | null
+          relationship?: string | null
+          school_code?: string
+          school_contact?: string | null
+          school_name?: string | null
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string
+          tsid?: string | null
+          ward?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "public_school_search"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "applications_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      certificates: {
+        Row: {
+          id: string
+          issued_at: string
+          ref: string
+          school_code: string
+          school_name: string
+          student_name: string
+          title: string
+          tsid: string
+        }
+        Insert: {
+          id?: string
+          issued_at?: string
+          ref: string
+          school_code: string
+          school_name: string
+          student_name: string
+          title?: string
+          tsid: string
+        }
+        Update: {
+          id?: string
+          issued_at?: string
+          ref?: string
+          school_code?: string
+          school_name?: string
+          student_name?: string
+          title?: string
+          tsid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "public_school_search"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "certificates_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "certificates_tsid_fkey"
+            columns: ["tsid"]
+            isOneToOne: false
+            referencedRelation: "public_student_search"
+            referencedColumns: ["tsid"]
+          },
+          {
+            foreignKeyName: "certificates_tsid_fkey"
+            columns: ["tsid"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["tsid"]
+          },
+        ]
       }
       payments: {
         Row: {
           amount: number
           created_at: string
-          id: string
-          method: string | null
-          reference: string | null
-          status: string
-          student_id: string
+          currency: string
+          method: Database["public"]["Enums"]["payment_method"] | null
+          paid_at: string | null
+          purpose: string | null
+          ref: string
+          school_code: string
+          status: Database["public"]["Enums"]["payment_status"]
+          student_name: string
+          tsid: string
         }
         Insert: {
-          amount: number
+          amount?: number
           created_at?: string
-          id?: string
-          method?: string | null
-          reference?: string | null
-          status?: string
-          student_id: string
+          currency?: string
+          method?: Database["public"]["Enums"]["payment_method"] | null
+          paid_at?: string | null
+          purpose?: string | null
+          ref?: string
+          school_code: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          student_name: string
+          tsid: string
         }
         Update: {
           amount?: number
           created_at?: string
-          id?: string
-          method?: string | null
-          reference?: string | null
-          status?: string
-          student_id?: string
+          currency?: string
+          method?: Database["public"]["Enums"]["payment_method"] | null
+          paid_at?: string | null
+          purpose?: string | null
+          ref?: string
+          school_code?: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          student_name?: string
+          tsid?: string
         }
         Relationships: [
           {
-            foreignKeyName: "payments_student_id_fkey"
-            columns: ["student_id"]
+            foreignKeyName: "payments_school_code_fkey"
+            columns: ["school_code"]
             isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
+            referencedRelation: "public_school_search"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "payments_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["code"]
           },
         ]
       }
-      profiles: {
+      request_letters: {
         Row: {
-          created_at: string
-          full_name: string | null
-          id: string
-          phone: string | null
-          school_id: string | null
-          tsid_no: string | null
-          updated_at: string
+          addressee: string | null
+          approved_at: string | null
+          reason: string | null
+          ref: string
+          requested_at: string
+          school_code: string
+          school_name: string
+          status: Database["public"]["Enums"]["letter_status"]
+          student_name: string
+          tsid: string
+          type: string
+          urgency: Database["public"]["Enums"]["letter_urgency"] | null
         }
         Insert: {
-          created_at?: string
-          full_name?: string | null
-          id: string
-          phone?: string | null
-          school_id?: string | null
-          tsid_no?: string | null
-          updated_at?: string
+          addressee?: string | null
+          approved_at?: string | null
+          reason?: string | null
+          ref?: string
+          requested_at?: string
+          school_code: string
+          school_name: string
+          status?: Database["public"]["Enums"]["letter_status"]
+          student_name: string
+          tsid: string
+          type: string
+          urgency?: Database["public"]["Enums"]["letter_urgency"] | null
         }
         Update: {
-          created_at?: string
-          full_name?: string | null
-          id?: string
-          phone?: string | null
-          school_id?: string | null
-          tsid_no?: string | null
-          updated_at?: string
+          addressee?: string | null
+          approved_at?: string | null
+          reason?: string | null
+          ref?: string
+          requested_at?: string
+          school_code?: string
+          school_name?: string
+          status?: Database["public"]["Enums"]["letter_status"]
+          student_name?: string
+          tsid?: string
+          type?: string
+          urgency?: Database["public"]["Enums"]["letter_urgency"] | null
         }
         Relationships: [
           {
-            foreignKeyName: "profiles_school_id_fkey"
-            columns: ["school_id"]
+            foreignKeyName: "request_letters_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "public_school_search"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "request_letters_school_code_fkey"
+            columns: ["school_code"]
             isOneToOne: false
             referencedRelation: "schools"
-            referencedColumns: ["id"]
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "request_letters_tsid_fkey"
+            columns: ["tsid"]
+            isOneToOne: false
+            referencedRelation: "public_student_search"
+            referencedColumns: ["tsid"]
+          },
+          {
+            foreignKeyName: "request_letters_tsid_fkey"
+            columns: ["tsid"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["tsid"]
           },
         ]
       }
       schools: {
         Row: {
+          address: string | null
           code: string
-          contact_email: string | null
-          contact_phone: string | null
+          contact: string | null
           created_at: string
-          district: string | null
-          id: string
+          district: string
+          email: string | null
           name: string
-          region: string | null
-          verified: boolean
+          password: string
+          region: string
+          status: Database["public"]["Enums"]["account_status"]
+          type: Database["public"]["Enums"]["school_type"]
+          updated_at: string
+          username: string
+          ward: string
         }
         Insert: {
+          address?: string | null
           code: string
-          contact_email?: string | null
-          contact_phone?: string | null
+          contact?: string | null
           created_at?: string
-          district?: string | null
-          id?: string
+          district: string
+          email?: string | null
           name: string
-          region?: string | null
-          verified?: boolean
+          password: string
+          region: string
+          status?: Database["public"]["Enums"]["account_status"]
+          type?: Database["public"]["Enums"]["school_type"]
+          updated_at?: string
+          username: string
+          ward: string
         }
         Update: {
+          address?: string | null
           code?: string
-          contact_email?: string | null
-          contact_phone?: string | null
+          contact?: string | null
           created_at?: string
-          district?: string | null
-          id?: string
+          district?: string
+          email?: string | null
           name?: string
-          region?: string | null
-          verified?: boolean
+          password?: string
+          region?: string
+          status?: Database["public"]["Enums"]["account_status"]
+          type?: Database["public"]["Enums"]["school_type"]
+          updated_at?: string
+          username?: string
+          ward?: string
         }
         Relationships: []
       }
       students: {
         Row: {
+          blood_group: string | null
           created_at: string
+          cred_password: string
+          cred_username: string
+          district: string
           dob: string | null
-          full_name: string
-          gender: string | null
-          id: string
-          photo_url: string | null
-          qr_payload: string | null
-          school_id: string | null
-          status: Database["public"]["Enums"]["student_status"]
-          tsid_no: string
+          enrollment_date: string | null
+          fullname: string
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          issue_date: string | null
+          level: string
+          nationality: string | null
+          parent_name: string | null
+          parent_nida: string | null
+          parent_phone: string | null
+          photo: string | null
+          region: string
+          relationship: string | null
+          remarks: Json
+          school_code: string
+          school_contact: string | null
+          school_name: string | null
+          status: Database["public"]["Enums"]["account_status"]
+          tsid: string
           updated_at: string
-          user_id: string | null
+          ward: string
         }
         Insert: {
+          blood_group?: string | null
           created_at?: string
+          cred_password: string
+          cred_username: string
+          district: string
           dob?: string | null
-          full_name: string
-          gender?: string | null
-          id?: string
-          photo_url?: string | null
-          qr_payload?: string | null
-          school_id?: string | null
-          status?: Database["public"]["Enums"]["student_status"]
-          tsid_no: string
+          enrollment_date?: string | null
+          fullname: string
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          issue_date?: string | null
+          level: string
+          nationality?: string | null
+          parent_name?: string | null
+          parent_nida?: string | null
+          parent_phone?: string | null
+          photo?: string | null
+          region: string
+          relationship?: string | null
+          remarks?: Json
+          school_code: string
+          school_contact?: string | null
+          school_name?: string | null
+          status?: Database["public"]["Enums"]["account_status"]
+          tsid?: string
           updated_at?: string
-          user_id?: string | null
+          ward: string
         }
         Update: {
+          blood_group?: string | null
           created_at?: string
+          cred_password?: string
+          cred_username?: string
+          district?: string
           dob?: string | null
-          full_name?: string
-          gender?: string | null
-          id?: string
-          photo_url?: string | null
-          qr_payload?: string | null
-          school_id?: string | null
-          status?: Database["public"]["Enums"]["student_status"]
-          tsid_no?: string
+          enrollment_date?: string | null
+          fullname?: string
+          gender?: Database["public"]["Enums"]["gender_type"] | null
+          issue_date?: string | null
+          level?: string
+          nationality?: string | null
+          parent_name?: string | null
+          parent_nida?: string | null
+          parent_phone?: string | null
+          photo?: string | null
+          region?: string
+          relationship?: string | null
+          remarks?: Json
+          school_code?: string
+          school_contact?: string | null
+          school_name?: string | null
+          status?: Database["public"]["Enums"]["account_status"]
+          tsid?: string
           updated_at?: string
-          user_id?: string | null
+          ward?: string
         }
         Relationships: [
           {
-            foreignKeyName: "students_school_id_fkey"
-            columns: ["school_id"]
+            foreignKeyName: "students_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "public_school_search"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "students_school_code_fkey"
+            columns: ["school_code"]
             isOneToOne: false
             referencedRelation: "schools"
-            referencedColumns: ["id"]
+            referencedColumns: ["code"]
           },
         ]
       }
-      user_roles: {
+    }
+    Views: {
+      public_school_search: {
         Row: {
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
+          code: string | null
+          created_at: string | null
+          district: string | null
+          email: string | null
+          name: string | null
+          region: string | null
+          status: Database["public"]["Enums"]["account_status"] | null
+          total_students: number | null
+          type: Database["public"]["Enums"]["school_type"] | null
+          ward: string | null
         }
         Insert: {
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
+          code?: string | null
+          created_at?: string | null
+          district?: string | null
+          email?: string | null
+          name?: string | null
+          region?: string | null
+          status?: Database["public"]["Enums"]["account_status"] | null
+          total_students?: never
+          type?: Database["public"]["Enums"]["school_type"] | null
+          ward?: string | null
         }
         Update: {
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
+          code?: string | null
+          created_at?: string | null
+          district?: string | null
+          email?: string | null
+          name?: string | null
+          region?: string | null
+          status?: Database["public"]["Enums"]["account_status"] | null
+          total_students?: never
+          type?: Database["public"]["Enums"]["school_type"] | null
+          ward?: string | null
         }
         Relationships: []
       }
-    }
-    Views: {
-      [_ in never]: never
+      public_student_search: {
+        Row: {
+          created_at: string | null
+          district: string | null
+          fullname: string | null
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          issue_date: string | null
+          level: string | null
+          nationality: string | null
+          region: string | null
+          school_code: string | null
+          school_name: string | null
+          school_official_name: string | null
+          school_region: string | null
+          school_type: Database["public"]["Enums"]["school_type"] | null
+          status: Database["public"]["Enums"]["account_status"] | null
+          tsid: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "students_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "public_school_search"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "students_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
     }
     Functions: {
-      current_school_id: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      search_student: {
-        Args: { _tsid_no: string }
+      get_user_profile: {
+        Args: never
         Returns: {
-          full_name: string
-          photo_url: string
-          region: string
-          school_name: string
-          status: Database["public"]["Enums"]["student_status"]
-          tsid_no: string
+          email: string
+          name: string
+          ref: string
+          role: string
+          user_id: string
         }[]
       }
+      hash_password: { Args: { plain_text: string }; Returns: string }
     }
     Enums: {
-      app_role: "gov" | "school" | "student"
+      account_status: "active" | "inactive" | "suspended"
       app_status: "pending" | "approved" | "rejected"
-      student_status: "active" | "suspended" | "graduated" | "revoked"
+      application_status: "pending" | "approved" | "rejected"
+      gender_type: "Male" | "Female"
+      letter_status: "pending" | "approved" | "rejected" | "issued"
+      letter_urgency: "normal" | "urgent" | "very_urgent"
+      payment_method:
+        | "M-Pesa"
+        | "Tigo Pesa"
+        | "Airtel Money"
+        | "Bank Transfer"
+        | "Cash"
+        | "Halopesa"
+        | "AzamPay"
+      payment_status: "pending" | "paid" | "failed" | "cancelled"
+      school_type:
+        | "Primary School"
+        | "Secondary School"
+        | "University / College"
+        | "Vocational Training"
+        | "Special Needs School"
+      user_role: "admin" | "gov" | "school" | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -418,9 +777,30 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["gov", "school", "student"],
+      account_status: ["active", "inactive", "suspended"],
       app_status: ["pending", "approved", "rejected"],
-      student_status: ["active", "suspended", "graduated", "revoked"],
+      application_status: ["pending", "approved", "rejected"],
+      gender_type: ["Male", "Female"],
+      letter_status: ["pending", "approved", "rejected", "issued"],
+      letter_urgency: ["normal", "urgent", "very_urgent"],
+      payment_method: [
+        "M-Pesa",
+        "Tigo Pesa",
+        "Airtel Money",
+        "Bank Transfer",
+        "Cash",
+        "Halopesa",
+        "AzamPay",
+      ],
+      payment_status: ["pending", "paid", "failed", "cancelled"],
+      school_type: [
+        "Primary School",
+        "Secondary School",
+        "University / College",
+        "Vocational Training",
+        "Special Needs School",
+      ],
+      user_role: ["admin", "gov", "school", "student"],
     },
   },
 } as const

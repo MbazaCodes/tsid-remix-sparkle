@@ -31,7 +31,7 @@ function Page() {
               </tr>
             </thead>
             <tbody>
-              {logs.map((l:{id:string;action:string;message?:string;by_name?:string;by_role?:string;created_at:string})=>(
+              {logs.map((l)=>(
                 <tr key={l.id} className="border-t hover:bg-muted/20">
                   <td className="px-4 py-2.5"><span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${ACTION_COLORS[l.action]??"text-slate-600 bg-slate-100"}`}>{l.action}</span></td>
                   <td className="px-4 py-2.5 text-sm max-w-xs truncate">{l.message??"—"}</td>

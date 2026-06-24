@@ -6,8 +6,8 @@ import { Download } from "lucide-react";
 import { ASSETS } from "@/lib/tsid";
 
 export type IdCardData = {
-  tsid_no: string;
-  full_name: string;
+  tsid: string;
+  fullname: string;
   school_name?: string | null;
   school_code?: string | null;
   region?: string | null;
@@ -193,12 +193,12 @@ function CardFront({ data, qr }: { data: IdCardData; qr: string }) {
               paddingBottom: 1, display: "block", lineHeight: 1.15,
               fontFamily: "ui-monospace, monospace",
               letterSpacing: 0.2,
-            }}>{data.tsid_no}</span>
+            }}>{data.tsid}</span>
           </div>
 
           {/* Standard fields */}
           {[
-            ["FULL NAME",    (data.full_name || "—").toUpperCase()],
+            ["FULL NAME",    (data.fullname || "—").toUpperCase()],
             ["DATE OF BIRTH", fmtDate(data.dob)],
             ["GENDER",       (data.gender || "—").toUpperCase()],
             ["NATIONALITY",  (data.nationality || "TANZANIAN").toUpperCase()],
@@ -313,7 +313,7 @@ function CardBack({ data }: { data: IdCardData }) {
         flexShrink: 0,
         fontFamily: "ui-monospace, monospace",
       }}>
-        {data.tsid_no}
+        {data.tsid}
       </div>
 
       {/* ── BODY ──────────────────────────────────────────────────────── */}
@@ -467,8 +467,8 @@ export function IdCard({ data, showBack = true, downloadable = true }: {
   const backRef  = useRef<HTMLDivElement>(null);
 
   const verifyUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/search?id=${encodeURIComponent(data.tsid_no)}`
-    : `https://verify.tsid.go.tz/id/${data.tsid_no}`;
+    ? `${window.location.origin}/search?id=${encodeURIComponent(data.tsid)}`
+    : `https://verify.tsid.go.tz/id/${data.tsid}`;
 
   useEffect(() => {
     QRCode.toDataURL(verifyUrl, {
@@ -482,7 +482,7 @@ export function IdCard({ data, showBack = true, downloadable = true }: {
     if (!ref.current) return;
     const png = await toPng(ref.current, { pixelRatio: 3, cacheBust: true });
     const a = document.createElement("a");
-    a.href = png; a.download = `TSID-${data.tsid_no}-${side}.png`; a.click();
+    a.href = png; a.download = `TSID-${data.tsid}-${side}.png`; a.click();
   }
 
   return (

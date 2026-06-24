@@ -7,13 +7,18 @@ export type CurrentUser = {
   userId: string | null;
   email: string | null;
   role: Role | null;
-  schoolId: string | null;
+  /** admin_users.ref — school code for schools, TSID for students, null otherwise */
+  ref: string | null;
+  /** convenience: ref when role === 'school' */
+  schoolCode: string | null;
+  /** convenience: ref when role === 'student' */
+  tsid: string | null;
   fullName: string | null;
 };
 
 export function useCurrentUser(): CurrentUser {
   const [state, setState] = useState<CurrentUser>({
-    loading: true, userId: null, email: null, role: null, schoolId: null, fullName: null,
+    loading: true, userId: null, email: null, role: null, ref: null, schoolCode: null, tsid: null, fullName: null,
   });
   // Track mounted state to prevent setState after unmount
   const mounted = useRef(true);
@@ -26,24 +31,29 @@ export function useCurrentUser(): CurrentUser {
       if (!mounted.current) return;
 
       if (!user) {
-        setState({ loading: false, userId: null, email: null, role: null, schoolId: null, fullName: null });
+        setState({ loading: false, userId: null, email: null, role: null, ref: null, schoolCode: null, tsid: null, fullName: null });
         return;
       }
 
-      const [{ data: roleRow }, { data: profile }] = await Promise.all([
-        supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle(),
-        supabase.from("profiles").select("full_name, school_id").eq("id", user.id).maybeSingle(),
-      ]);
+      const { data: prof } = await supabase
+        .from("admin_users")
+        .select("role, ref, name")
+        .eq("auth_uid", user.id)
+        .maybeSingle();
 
       if (!mounted.current) return;
 
+      const role = (prof?.role as Role | undefined) ?? null;
+      const ref = prof?.ref ?? null;
       setState({
         loading: false,
         userId: user.id,
         email: user.email ?? null,
-        role: (roleRow?.role as Role) ?? null,
-        schoolId: profile?.school_id ?? null,
-        fullName: profile?.full_name ?? null,
+        role,
+        ref,
+        schoolCode: role === "school" ? ref : null,
+        tsid: role === "student" ? ref : null,
+        fullName: prof?.name ?? user.email ?? null,
       });
     }
 

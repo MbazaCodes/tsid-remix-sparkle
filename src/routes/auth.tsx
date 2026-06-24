@@ -10,7 +10,7 @@ import { ASSETS, roleHome, type Role } from "@/lib/tsid";
 import { toast } from "sonner";
 import { Eye, EyeOff, ShieldCheck, GraduationCap, Building2 } from "lucide-react";
 
-const searchSchema = z.object({ role: z.enum(["gov","school","student"]).optional() });
+const searchSchema = z.object({ role: z.enum(["admin","gov","school","student"]).optional() });
 export const Route = createFileRoute("/auth")({ validateSearch: searchSchema, component: AuthPage });
 
 function AuthPage() {
@@ -24,6 +24,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   const ROLE_DEFS: Record<Role, { label: string; desc: string; icon: typeof ShieldCheck }> = {
+    admin:   { label: "Admin",          desc: "System administrator",                     icon: ShieldCheck },
     gov:     { label: t("role_gov"),     desc: t("role_gov_desc"),     icon: ShieldCheck },
     school:  { label: t("role_school"),  desc: t("role_school_desc"),  icon: Building2 },
     student: { label: t("role_student"), desc: t("role_student_desc"), icon: GraduationCap },
@@ -33,8 +34,8 @@ function AuthPage() {
     (async () => {
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        const { data: r } = await supabase.from("user_roles").select("role").eq("user_id", data.session.user.id).maybeSingle();
-        navigate({ to: roleHome(r?.role as Role), replace: true });
+        const { data: p } = await supabase.from("admin_users").select("role").eq("auth_uid", data.session.user.id).maybeSingle();
+        navigate({ to: roleHome((p?.role as Role) ?? "student"), replace: true });
       }
     })();
   }, [navigate]);
@@ -44,14 +45,12 @@ function AuthPage() {
     setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) { toast.error(error.message); setLoading(false); return; }
-    const { data: r } = await supabase.from("user_roles").select("role").eq("user_id", data.user!.id).maybeSingle();
-    const actualRole = r?.role as Role | null;
-    if (!actualRole) { toast.error("No TSID profile found. Contact your administrator."); await supabase.auth.signOut(); setLoading(false); return; }
-    if (actualRole !== selectedRole) {
-      toast.error(`Account is "${actualRole}". Redirecting…`);
-      setTimeout(() => navigate({ to: roleHome(actualRole), replace: true }), 900);
-      setLoading(false); return;
+    const { data: p } = await supabase.from("admin_users").select("role").eq("auth_uid", data.user!.id).maybeSingle();
+    const actualRole = (p?.role as Role | null) ?? "student";
+    if (actualRole !== selectedRole && !(selectedRole === "gov" && actualRole === "admin")) {
+      toast.message(`Signed in as "${actualRole}" — redirecting…`);
     }
+    setLoading(false);
     navigate({ to: roleHome(actualRole), replace: true });
   }
 

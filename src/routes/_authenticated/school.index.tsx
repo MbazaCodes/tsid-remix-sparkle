@@ -13,33 +13,26 @@ function Page() {
   const { t } = useTheme();
 
   const { data: school } = useQuery({
-    enabled: !!me.schoolId,
-    queryKey: ["school", me.schoolId],
-    queryFn: async () =>
-      (await supabase.from("schools").select("*").eq("id", me.schoolId!).maybeSingle()).data,
+    enabled: !!me.schoolCode,
+    queryKey: ["school", me.schoolCode],
+    queryFn: async () => (await supabase.from("schools").select("*").eq("code", me.schoolCode!).maybeSingle()).data,
   });
 
   const { data: students = [] } = useQuery({
-    enabled: !!me.schoolId,
-    queryKey: ["school-students", me.schoolId],
+    enabled: !!me.schoolCode,
+    queryKey: ["school-students", me.schoolCode],
     queryFn: async () =>
-      (await supabase.from("students").select("*")
-        .eq("school_id", me.schoolId!)
-        .order("created_at", { ascending: false }))
-        .data ?? [],
+      (await supabase.from("students").select("tsid,fullname,level,status,created_at").eq("school_code", me.schoolCode!).order("created_at", { ascending: false })).data ?? [],
   });
 
   const { data: pendingApps = [] } = useQuery({
-    enabled: !!me.schoolId,
-    queryKey: ["school-pending-apps", me.schoolId],
+    enabled: !!me.schoolCode,
+    queryKey: ["school-pending-apps", me.schoolCode],
     queryFn: async () =>
-      (await supabase.from("applications")
-        .select("id")
-        .eq("status", "pending"))
-        .data ?? [],
+      (await supabase.from("applications").select("id").eq("school_code", me.schoolCode!).eq("status", "pending")).data ?? [],
   });
 
-  if (!me.loading && !me.schoolId) {
+  if (!me.loading && !me.schoolCode) {
     return (
       <div className="rounded-2xl border bg-card p-8 max-w-xl">
         <div className="flex items-center gap-2 text-amber-600 font-semibold">
@@ -53,14 +46,9 @@ function Page() {
   }
 
   const recent = students.slice(0, 5);
-  const active = students.filter((s: { status: string }) => s.status === "active").length;
-
-  // Level breakdown
+  const active = students.filter((s) => s.status === "active").length;
   const levelMap: Record<string, number> = {};
-  students.forEach((s: { level?: string | null }) => {
-    const l = s.level ?? "Unset";
-    levelMap[l] = (levelMap[l] ?? 0) + 1;
-  });
+  students.forEach((s) => { const l = s.level ?? "Unset"; levelMap[l] = (levelMap[l] ?? 0) + 1; });
 
   const tiles = [
     { label: t("total_students"), value: students.length, icon: Users, color: "var(--tz-navy)" },
@@ -70,17 +58,14 @@ function Page() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>
             {school?.name ?? "School Dashboard"}
           </h1>
           <p className="text-sm text-muted-foreground">
-            {school?.type}{school?.region ? ` · ${school.region}` : ""}
-            {school?.district ? `, ${school.district}` : ""}
-            {school?.code ? ` · Code ` : ""}
-            {school?.code && <span className="font-mono text-foreground">{school.code}</span>}
+            {school?.type}{school?.region ? ` · ${school.region}` : ""}{school?.district ? `, ${school.district}` : ""}
+            {school?.code && <> · Code <span className="font-mono text-foreground">{school.code}</span></>}
           </p>
         </div>
         <Button asChild className="bg-primary">
@@ -88,21 +73,19 @@ function Page() {
         </Button>
       </div>
 
-      {/* Stats */}
       <div className="grid sm:grid-cols-3 gap-4">
-        {tiles.map((t) => (
-          <div key={t.label} className="rounded-2xl border bg-card p-5">
-            <div className="h-9 w-9 rounded-lg flex items-center justify-center text-white" style={{ background: t.color }}>
-              <t.icon className="h-4 w-4" />
+        {tiles.map((tile) => (
+          <div key={tile.label} className="rounded-2xl border bg-card p-5">
+            <div className="h-9 w-9 rounded-lg flex items-center justify-center text-white" style={{ background: tile.color }}>
+              <tile.icon className="h-4 w-4" />
             </div>
-            <div className="mt-3 text-3xl font-bold">{t.value}</div>
-            <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">{t.label}</div>
+            <div className="mt-3 text-3xl font-bold">{tile.value}</div>
+            <div className="text-xs text-muted-foreground mt-1 uppercase tracking-wider">{tile.label}</div>
           </div>
         ))}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Recent students */}
         <div className="rounded-2xl border bg-card overflow-hidden">
           <div className="px-4 py-3 border-b flex items-center justify-between">
             <span className="font-semibold text-sm">Recently Registered</span>
@@ -113,17 +96,13 @@ function Page() {
           ) : (
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
-                <tr>
-                  <th className="px-4 py-2 text-left">Name</th>
-                  <th className="px-4 py-2 text-left">TSID</th>
-                  <th className="px-4 py-2 text-left">Level</th>
-                </tr>
+                <tr><th className="px-4 py-2 text-left">Name</th><th className="px-4 py-2 text-left">TSID</th><th className="px-4 py-2 text-left">Level</th></tr>
               </thead>
               <tbody>
-                {recent.map((st: { id: string; full_name: string; tsid_no: string; level?: string | null }) => (
-                  <tr key={st.id} className="border-t">
-                    <td className="px-4 py-2 font-medium">{st.full_name}</td>
-                    <td className="px-4 py-2 font-mono text-xs text-muted-foreground">{st.tsid_no}</td>
+                {recent.map((st) => (
+                  <tr key={st.tsid} className="border-t">
+                    <td className="px-4 py-2 font-medium">{st.fullname}</td>
+                    <td className="px-4 py-2 font-mono text-xs text-muted-foreground">{st.tsid}</td>
                     <td className="px-4 py-2 text-xs">{st.level ?? "—"}</td>
                   </tr>
                 ))}
@@ -131,8 +110,6 @@ function Page() {
             </table>
           )}
         </div>
-
-        {/* Level breakdown */}
         <div className="rounded-2xl border bg-card overflow-hidden">
           <div className="px-4 py-3 border-b font-semibold text-sm">Students by Level</div>
           <div className="p-4 space-y-3">
@@ -142,13 +119,8 @@ function Page() {
               const pct = students.length ? Math.round((count / students.length) * 100) : 0;
               return (
                 <div key={level}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="font-medium">{level}</span>
-                    <span className="font-bold text-primary">{count}</span>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
-                  </div>
+                  <div className="flex justify-between text-sm mb-1"><span className="font-medium">{level}</span><span className="font-bold text-primary">{count}</span></div>
+                  <div className="h-1.5 bg-muted rounded-full overflow-hidden"><div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} /></div>
                 </div>
               );
             })}

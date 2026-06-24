@@ -22,7 +22,11 @@ export const Route = createFileRoute("/search")({
   component: SearchPage,
 });
 
-type Result = { tsid_no: string; full_name: string; status: string; photo_url: string | null; school_name: string | null; region: string | null } | null;
+type Result = {
+  tsid: string; fullname: string; status: string | null;
+  school_official_name: string | null; school_region: string | null;
+  region: string | null; level: string | null;
+} | null;
 
 function SearchPage() {
   const { id } = Route.useSearch();
@@ -34,10 +38,13 @@ function SearchPage() {
   async function run(value: string) {
     if (!value.trim()) return;
     setLoading(true); setSearched(true);
-    const { data, error } = await supabase.rpc("search_student", { _tsid_no: value.trim() });
+    const { data } = await supabase
+      .from("public_student_search")
+      .select("tsid,fullname,status,school_official_name,school_region,region,level")
+      .eq("tsid", value.trim())
+      .maybeSingle();
     setLoading(false);
-    if (error) { setResult(null); return; }
-    setResult((data?.[0] as Result) ?? null);
+    setResult((data as Result) ?? null);
   }
 
   useEffect(() => { if (id) run(id); /* eslint-disable-next-line */ }, [id]);
@@ -47,9 +54,9 @@ function SearchPage() {
       <SiteHeader />
       <main className="flex-1 mx-auto max-w-3xl w-full px-4 py-12">
         <h1 className="text-3xl md:text-4xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>Verify a student ID</h1>
-        <p className="mt-2 text-muted-foreground">Enter a TSID number (e.g. <span className="font-mono">TSID-26-100482</span>) to check whether it is genuine.</p>
+        <p className="mt-2 text-muted-foreground">Enter a TSID number (e.g. <span className="font-mono">TSID-2026-A7K9P2X</span>) to verify it.</p>
         <form onSubmit={(e) => { e.preventDefault(); run(q); }} className="mt-6 flex gap-2">
-          <Input placeholder="TSID-YY-XXXXXX" value={q} onChange={(e) => setQ(e.target.value)} className="font-mono" />
+          <Input placeholder="TSID-YYYY-XXXXXXX" value={q} onChange={(e) => setQ(e.target.value)} className="font-mono" />
           <Button type="submit" disabled={loading}><SearchIcon className="h-4 w-4 mr-2" /> {loading ? "Searching…" : "Search"}</Button>
         </form>
 
@@ -59,7 +66,13 @@ function SearchPage() {
               <div className="rounded-2xl border bg-card p-6">
                 <div className="flex items-center gap-2 text-[color:var(--tz-green)] font-semibold"><BadgeCheck className="h-5 w-5" /> Verified record</div>
                 <div className="mt-4">
-                  <IdCard data={{ ...result, dob: null, gender: null }} />
+                  <IdCard data={{
+                    tsid: result.tsid, fullname: result.fullname,
+                    school_name: result.school_official_name,
+                    region: result.region ?? result.school_region,
+                    level: result.level, status: result.status,
+                    dob: null, gender: null, photo_url: null,
+                  }} showBack={false} downloadable={false} />
                 </div>
               </div>
             ) : (
@@ -67,7 +80,7 @@ function SearchPage() {
                 <AlertCircle className="h-5 w-5 mt-0.5" />
                 <div>
                   <div className="font-semibold">No record found</div>
-                  <div className="text-sm opacity-90">This TSID number is not registered in the national database.</div>
+                  <div className="text-sm opacity-90">This TSID number is not registered.</div>
                 </div>
               </div>
             )}

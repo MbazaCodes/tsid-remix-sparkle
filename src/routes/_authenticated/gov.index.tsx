@@ -16,20 +16,20 @@ function GovDashboard() {
     queryKey: ["gov-kpis"],
     queryFn: async () => {
       const [students, schools, apps, active, logs] = await Promise.all([
-        supabase.from("students").select("id",{count:"exact",head:true}),
-        supabase.from("schools").select("id",{count:"exact",head:true}),
+        supabase.from("students").select("tsid",{count:"exact",head:true}),
+        supabase.from("schools").select("code",{count:"exact",head:true}),
         supabase.from("applications").select("id",{count:"exact",head:true}).eq("status","pending"),
-        supabase.from("students").select("id",{count:"exact",head:true}).eq("status","active"),
+        supabase.from("students").select("tsid",{count:"exact",head:true}).eq("status","active"),
         supabase.from("activity_logs").select("*").order("created_at",{ascending:false}).limit(6),
       ]);
       return { students: students.count??0, schools: schools.count??0, apps: apps.count??0, active: active.count??0, recentLogs: logs.data??[] };
     },
   });
-  const { data: schoolsData=[] } = useQuery({ queryKey:["gov-schools-dash"], queryFn: async()=>(await supabase.from("schools").select("*").order("name").limit(5)).data??[] });
+  const { data: schoolsData=[] } = useQuery({ queryKey:["gov-schools-dash"], queryFn: async()=>(await supabase.from("schools").select("code,name,region,status").order("name").limit(5)).data??[] });
   const { data: regionData=[] } = useQuery({ queryKey:["gov-regions"], queryFn: async()=>{
     const {data:st}=await supabase.from("students").select("region");
     const {data:sc}=await supabase.from("schools").select("region");
-    return [...new Set([...(st??[]).map((x:{region?:string|null})=>x.region),...(sc??[]).map((x:{region?:string|null})=>x.region)].filter(Boolean))] as string[];
+    return [...new Set([...(st??[]).map((x)=>x.region),...(sc??[]).map((x)=>x.region)].filter(Boolean))] as string[];
   }});
 
   const tiles = [
@@ -69,7 +69,7 @@ function GovDashboard() {
         {[
           {label:t("kpi_regions"),  value:regionData.length, icon:TrendingUp},
           {label:t("kpi_approved"), value:"—",                icon:BadgeCheck},
-          {label:t("kpi_verified"), value:(schoolsData as {verified:boolean}[]).filter(s=>s.verified).length, icon:Building2},
+          {label:t("kpi_verified"), value:schoolsData.filter((s)=>s.status==="active").length, icon:Building2},
         ].map(tile=>(
           <div key={tile.label} className="rounded-xl border bg-card p-4 flex items-center gap-3">
             <tile.icon className="h-6 w-6 text-muted-foreground flex-shrink-0"/>
@@ -88,12 +88,12 @@ function GovDashboard() {
             <table className="w-full text-sm"><thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
               <tr><th className="px-4 py-2 text-left">{t("col_code")}</th><th className="px-4 py-2 text-left">{t("col_school")}</th><th className="px-4 py-2 text-left">{t("col_region")}</th><th className="px-4 py-2 text-left">{t("col_status")}</th></tr>
             </thead><tbody>
-              {schoolsData.map((s:{id:string;code:string;name:string;region?:string;verified:boolean})=>(
-                <tr key={s.id} className="border-t">
+              {schoolsData.map((s)=>(
+                <tr key={s.code} className="border-t">
                   <td className="px-4 py-2 font-mono text-xs text-primary font-bold">{s.code}</td>
                   <td className="px-4 py-2 font-medium">{s.name}</td>
                   <td className="px-4 py-2 text-xs text-muted-foreground">{s.region??"—"}</td>
-                  <td className="px-4 py-2"><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${s.verified?"bg-emerald-100 text-emerald-800":"bg-amber-100 text-amber-800"}`}>{s.verified?t("active"):t("pending")}</span></td>
+                  <td className="px-4 py-2"><span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${s.status==="active"?"bg-emerald-100 text-emerald-800":"bg-amber-100 text-amber-800"}`}>{s.status==="active"?t("active"):t("pending")}</span></td>
                 </tr>
               ))}
             </tbody></table>
@@ -107,7 +107,7 @@ function GovDashboard() {
           </div>
           {(kpis?.recentLogs??[]).length===0 ? <p className="px-4 py-8 text-sm text-center text-muted-foreground">{t("no_activity")}</p> : (
             <div className="divide-y">
-              {(kpis?.recentLogs??[]).map((l:{id:string;action:string;message?:string|null;by_name?:string|null;created_at:string})=>(
+              {(kpis?.recentLogs??[]).map((l)=>(
                 <div key={l.id} className="px-4 py-3 flex items-start gap-3">
                   <span className={`mt-0.5 inline-flex rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap flex-shrink-0 ${ACTION_COLORS[l.action]??"bg-muted text-muted-foreground"}`}>
                     {l.action.split(":")[1]??l.action}

@@ -11,14 +11,14 @@ function Page() {
   const { t } = useTheme();
   const [search, setSearch] = useState(""); const [regionFilter, setRegionFilter] = useState("");
 
-  const { data: students=[] } = useQuery({ queryKey:["gov-students"], queryFn: async()=>(await supabase.from("students").select("*, schools(name,region,code,district)").order("created_at",{ascending:false})).data??[] });
-  const { data: schools=[]  } = useQuery({ queryKey:["gov-schools-light"], queryFn: async()=>(await supabase.from("schools").select("id,name,region,code")).data??[] });
+  const { data: students=[] } = useQuery({ queryKey:["gov-students"], queryFn: async()=>(await supabase.from("students").select("tsid,fullname,dob,gender,photo,status,level,region,district,school_code,school_name,created_at").order("created_at",{ascending:false})).data??[] });
+  const { data: schools=[]  } = useQuery({ queryKey:["gov-schools-light"], queryFn: async()=>(await supabase.from("schools").select("code,name,region")).data??[] });
 
-  const regions=[...new Set((schools as {region?:string}[]).map(s=>s.region).filter(Boolean))] as string[];
-  const filtered=students.filter((st:{full_name:string;tsid_no:string;region?:string;schools?:{name?:string;code?:string;region?:string}|null})=>{
+  const regions=[...new Set(schools.map((s)=>s.region).filter(Boolean))] as string[];
+  const filtered=students.filter((st)=>{
     const q=search.toLowerCase();
-    return(!q||st.full_name.toLowerCase().includes(q)||st.tsid_no.toLowerCase().includes(q)||(st.schools?.name??"").toLowerCase().includes(q))
-      &&(!regionFilter||(st.region??st.schools?.region??"")===regionFilter);
+    return(!q||st.fullname.toLowerCase().includes(q)||st.tsid.toLowerCase().includes(q)||(st.school_name??"").toLowerCase().includes(q))
+      &&(!regionFilter||(st.region??"")===regionFilter);
   });
 
   return (
@@ -30,7 +30,7 @@ function Page() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           {label:t("total_students"), value:students.length, color:"var(--tz-navy)"},
-          {label:t("active_ids"),     value:(students as {status:string}[]).filter(s=>s.status==="active").length, color:"var(--tz-green)"},
+          {label:t("active_ids"),     value:students.filter((s)=>s.status==="active").length, color:"var(--tz-green)"},
           {label:t("kpi_schools"),    value:schools.length,  color:"var(--tz-blue)"},
           {label:t("kpi_regions"),    value:regions.length,  color:"var(--tz-gold)"},
         ].map(tile=>(
@@ -59,12 +59,12 @@ function Page() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((st:{id:string;tsid_no:string;full_name:string;dob?:string|null;gender?:string|null;photo_url?:string|null;status:string;level?:string|null;region?:string|null;schools?:{name?:string;code?:string;region?:string}|null})=>(
-                <tr key={st.id} className="border-t hover:bg-muted/20">
-                  <td className="px-4 py-2">{st.photo_url?<img src={st.photo_url} className="w-9 h-12 object-cover rounded-md border" alt=""/>:<div className="w-9 h-12 rounded-md border bg-muted flex items-center justify-center text-lg">👤</div>}</td>
-                  <td className="px-4 py-3"><div className="font-semibold">{st.full_name}</div><div className="text-xs font-mono text-muted-foreground">{st.tsid_no}</div><div className="text-xs text-muted-foreground">{st.gender??"—"} · {st.dob??"—"}</div></td>
-                  <td className="px-4 py-3"><div className="text-sm font-medium">{st.schools?.name??"—"}</div><div className="text-xs font-mono text-muted-foreground">{st.schools?.code??""}</div></td>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">{st.region??st.schools?.region??"—"}</td>
+              {filtered.map((st)=>(
+                <tr key={st.tsid} className="border-t hover:bg-muted/20">
+                  <td className="px-4 py-2">{st.photo?<img src={st.photo} className="w-9 h-12 object-cover rounded-md border" alt=""/>:<div className="w-9 h-12 rounded-md border bg-muted flex items-center justify-center text-lg">👤</div>}</td>
+                  <td className="px-4 py-3"><div className="font-semibold">{st.fullname}</div><div className="text-xs font-mono text-muted-foreground">{st.tsid}</div><div className="text-xs text-muted-foreground">{st.gender??"—"} · {st.dob??"—"}</div></td>
+                  <td className="px-4 py-3"><div className="text-sm font-medium">{st.school_name??"—"}</div><div className="text-xs font-mono text-muted-foreground">{st.school_code??""}</div></td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{st.region??"—"}</td>
                   <td className="px-4 py-3 text-sm">{st.level??"—"}</td>
                   <td className="px-4 py-3"><span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${st.status==="active"?"bg-emerald-100 text-emerald-800":"bg-red-100 text-red-800"}`}>{st.status==="active"?t("active"):t("inactive")}</span></td>
                 </tr>

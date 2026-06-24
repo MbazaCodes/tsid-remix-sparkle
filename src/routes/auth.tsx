@@ -89,7 +89,7 @@ function AuthPage() {
           <h1 style={{
             fontFamily: "var(--font-display)",
             fontWeight: 900,
-            fontSize: "clamp(1.8rem, 2.8vw, 2.6rem)",
+            fontSize: "clamp(1.2rem, 1.8vw, 1.6rem)",
             color: "#003366",
             lineHeight: 1.1,
             marginBottom: 24,

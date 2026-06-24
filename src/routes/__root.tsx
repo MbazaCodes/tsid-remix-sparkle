@@ -107,9 +107,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-      { rel: "icon", type: "image/png", sizes: "512x512", href: "/tsid-logo.png" },
-      { rel: "apple-touch-icon", sizes: "192x192", href: "/logo192.png" },
+      { rel: "icon", type: "image/png", href: "/tsid-logo.png" },
+      { rel: "shortcut icon", type: "image/png", href: "/tsid-logo.png" },
+      { rel: "apple-touch-icon", href: "/tsid-logo.png" },
       { rel: "manifest", href: "/manifest.json" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },

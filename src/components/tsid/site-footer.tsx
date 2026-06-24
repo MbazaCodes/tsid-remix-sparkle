@@ -40,7 +40,7 @@ export function SiteFooter() {
   ];
 
   return (
-    <footer style={{ background: bg, color: text, fontFamily: "var(--font-sans)" }}>
+    <footer role="contentinfo" aria-label="Site footer" style={{ background: bg, color: text, fontFamily: "var(--font-sans)" }}>
       {/* TZ flag stripe */}
       <div className="tz-flag-stripe" />
 

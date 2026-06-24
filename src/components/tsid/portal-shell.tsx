@@ -49,7 +49,7 @@ export function PortalShell({ title, items, subtitle }: {
       </Link>
 
       {/* Nav items */}
-      <nav style={{ flex: 1, padding: "12px 10px", display: "flex", flexDirection: "column", gap: 3 }}>
+      <nav aria-label="Portal navigation" style={{ flex: 1, padding: "12px 10px", display: "flex", flexDirection: "column", gap: 3 }}>
         {items.map((it) => {
           const active = pathname === it.to || (it.to !== "/" && pathname.startsWith(it.to + "/"));
           return (
@@ -143,7 +143,7 @@ export function PortalShell({ title, items, subtitle }: {
         <div className="hidden md:flex" style={{ height: "100vh", position: "sticky", top: 0 }}>{sidebar}</div>
 
         {/* Main content */}
-        <main style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
+        <main id="main-content" style={{ flex: 1, minWidth: 0, overflowY: "auto" }} aria-label="Main content">
           <div style={{ maxWidth: 1100, margin: "0 auto", padding: "28px 20px 60px" }}>
             <Outlet />
           </div>

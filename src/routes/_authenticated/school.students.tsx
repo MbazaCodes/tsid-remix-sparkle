@@ -131,7 +131,10 @@ function StudentRow({ student }: {
 }) {
   const [showPass, setShowPass] = useState(false);
   function copy(text: string) {
-    navigator.clipboard.writeText(text).then(() => toast.success("Copied!"));
+    navigator.clipboard.writeText(text).then(
+        () => toast.success("Copied!"),
+        () => toast.error("Could not copy — please copy manually.")
+      );
   }
   return (
     <tr className="border-t hover:bg-muted/20">

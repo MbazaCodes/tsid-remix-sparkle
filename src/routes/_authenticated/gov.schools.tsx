@@ -141,7 +141,10 @@ function SchoolRow({
 }) {
   const [showPass, setShowPass] = useState(false);
   function copy(text: string) {
-    navigator.clipboard.writeText(text).then(() => toast.success("Copied!"));
+    navigator.clipboard.writeText(text).then(
+        () => toast.success("Copied!"),
+        () => toast.error("Could not copy — please copy manually.")
+      );
   }
   return (
     <tr className="border-t hover:bg-muted/20">
@@ -161,7 +164,7 @@ function SchoolRow({
             <span className="text-primary">
               {showPass ? school.cred_password : "••••••"}
             </span>
-            <button onClick={() => setShowPass(!showPass)} className="text-muted-foreground hover:text-foreground">
+            <button onClick={() => setShowPass(!showPass)} aria-label={showPass ? "Hide password" : "Show password"} className="text-muted-foreground hover:text-foreground">
               {showPass ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
             </button>
             {showPass && school.cred_password && (

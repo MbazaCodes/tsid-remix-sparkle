@@ -43,7 +43,7 @@ function SearchPage() {
   useEffect(() => { if (id) run(id); /* eslint-disable-next-line */ }, [id]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" id="main-content">
       <SiteHeader />
       <main className="flex-1 mx-auto max-w-3xl w-full px-4 py-12">
         <h1 className="text-3xl md:text-4xl font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>Verify a student ID</h1>

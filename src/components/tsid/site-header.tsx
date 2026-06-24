@@ -23,7 +23,7 @@ export function SiteHeader() {
   const border = isDark ? "rgba(255,255,255,.07)" : "#e2e8f0";
 
   return (
-    <header className="sticky top-0 z-50" style={{ background: bg, borderBottom: `1px solid ${border}`, boxShadow: "0 1px 12px rgba(0,0,0,.07)" }}>
+    <header className="sticky top-0 z-50" role="banner" style={{ background: bg, borderBottom: `1px solid ${border}`, boxShadow: "0 1px 12px rgba(0,0,0,.07)" }}>
       {/* TZ flag stripe */}
       <div className="tz-flag-stripe" />
 
@@ -48,7 +48,7 @@ export function SiteHeader() {
         </div>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1 ml-auto">
+        <nav className="hidden md:flex items-center gap-1 ml-auto" aria-label="Main navigation">
           {NAV.map((item) => {
             const active = !item.hash && (item.exact ? pathname === item.href : pathname.startsWith(item.href));
             return item.hash ? (

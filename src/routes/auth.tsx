@@ -68,7 +68,7 @@ function AuthPage() {
         borderRight: "1px solid #e2e8f0",
       }}>
         {/* Logo + wordmark */}
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 16, textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 20, textDecoration: "none" }}>
           <img
             src={ASSETS.logo}
             alt="TSID"
@@ -79,8 +79,8 @@ function AuthPage() {
             }}
           />
           <div>
-            <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, color: "#003366", letterSpacing: -0.5, lineHeight: 1 }}>TSID</div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#1B8F3A", letterSpacing: 0.8, marginTop: 4, textTransform: "uppercase" }}>Tanzania Student ID</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 34, color: "#003366", letterSpacing: -0.5, lineHeight: 1 }}>TSID</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#1B8F3A", letterSpacing: 0.8, marginTop: 4, textTransform: "uppercase" }}>Tanzania Student ID</div>
           </div>
         </Link>
 

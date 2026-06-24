@@ -6,8 +6,8 @@ import { Download } from "lucide-react";
 import { ASSETS } from "@/lib/tsid";
 
 export type IdCardData = {
-  tsid_no: string;
-  full_name: string;
+  tsid: string;
+  fullname: string;
   school_name?: string | null;
   school_code?: string | null;
   region?: string | null;
@@ -198,7 +198,7 @@ function CardFront({ data, qr }: { data: IdCardData; qr: string }) {
 
           {/* Standard fields */}
           {[
-            ["FULL NAME",    (data.full_name || "—").toUpperCase()],
+            ["FULL NAME",    (data.fullname || "—").toUpperCase()],
             ["DATE OF BIRTH", fmtDate(data.dob)],
             ["GENDER",       (data.gender || "—").toUpperCase()],
             ["NATIONALITY",  (data.nationality || "TANZANIAN").toUpperCase()],

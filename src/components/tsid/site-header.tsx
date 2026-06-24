@@ -30,12 +30,9 @@ export function SiteHeader() {
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", height: 68, gap: 16 }}>
 
         {/* Logo + wordmark */}
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none", flexShrink: 0 }}>
-          <img src={ASSETS.logo} alt="TSID" style={{ width: 52, height: 52, objectFit: "contain" }} />
-          <div style={{ lineHeight: 1.1 }}>
-            <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, color: text, letterSpacing: -0.3 }}>TSID</div>
-            <div style={{ fontSize: 9, fontWeight: 700, color: sub, letterSpacing: 0.8, marginTop: 2, textTransform: "uppercase" }}>{t("tagline")}</div>
-          </div>
+        <Link to="/" aria-label="TSID Home" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", flexShrink: 0 }}>
+          <img src={ASSETS.logo} alt="TSID — Tanzania Student Identification System" style={{ width: 52, height: 52, objectFit: "contain" }} />
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 22, color: text, letterSpacing: -0.5, lineHeight: 1 }}>TSID</span>
         </Link>
 
         {/* Gov branding — desktop only */}

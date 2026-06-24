@@ -177,6 +177,36 @@ const TR: Record<Lang, Record<string, string>> = {
     hero_signin: "Sign in to the portal",
     hero_verify: "Verify a student ID",
     rls_secured: "RLS-secured", tamper_qr: "Tamper-evident QR", made_tz: "Made for Tanzania",
+    // How It Works
+    how_label: "Simple Process",
+    how_title: "How TSID Works",
+    how_sub: "Four simple steps — from school registration to a verified national student ID, fully digital and fully official.",
+    how_step1_title: "Government Registers School",
+    how_step1_body: "The Ministry of Education registers your institution in TSID, assigns a unique school code and issues admin login credentials.",
+    how_step2_title: "School Creates Student Record",
+    how_step2_body: "School administrators log in and create student profiles — uploading photos, parent info and academic details.",
+    how_step3_title: "TSID Number Is Issued",
+    how_step3_body: "The system automatically generates a unique TSID number and a printable CR80 ID card with a tamper-evident QR code.",
+    how_step4_title: "Anyone Can Verify Instantly",
+    how_step4_body: "Scan the QR or enter the TSID number at verify.tsid.go.tz — no login needed, result in seconds.",
+
+    // Stats
+    stat_regions: "Regions & Councils",
+    stat_portals: "Secure Portals",
+    stat_standard: "ID Card Standard",
+    stat_digital: "Paperless Process",
+
+    // Sections
+    feat_label: "What TSID Does",
+    portals_label: "Three Portals",
+    roles_sub: "Each stakeholder has a dedicated, role-specific portal with the right tools and permissions.",
+
+    // CTA Banner
+    cta_title: "Tanzania's national student ID system — online now.",
+    cta_sub: "Join thousands of schools already using TSID to issue verifiable student identification.",
+
+    // Footer
+    send_feedback: "Send Feedback",
     features_title: "Built for the whole identification lifecycle",
     feat_school_title: "Schools issue", feat_school_body: "Register students, attach photos, generate official TSID numbers and print plastic-ready ID cards.",
     feat_verify_title: "Anyone verifies", feat_verify_body: "A public, anonymous lookup that returns only sanitized information — no leaks of personal data.",
@@ -359,6 +389,36 @@ const TR: Record<Lang, Record<string, string>> = {
     hero_signin: "Ingia kwenye mfumo",
     hero_verify: "Thibitisha kitambulisho",
     rls_secured: "Salama na RLS", tamper_qr: "QR isiyobadilishwa", made_tz: "Imetengenezwa Tanzania",
+    // How It Works
+    how_label: "Mchakato Rahisi",
+    how_title: "Jinsi TSID Inavyofanya Kazi",
+    how_sub: "Hatua nne rahisi — kutoka usajili wa shule hadi kitambulisho cha kitaifa kilichothibitishwa, kwa njia ya kidijitali kabisa.",
+    how_step1_title: "Serikali Inasajili Shule",
+    how_step1_body: "Wizara ya Elimu inasajili taasisi yako katika TSID, inatenga nambari ya kipekee ya shule na kutoa nambari za siri za msimamizi.",
+    how_step2_title: "Shule Inaunda Rekodi ya Mwanafunzi",
+    how_step2_body: "Wasimamizi wa shule wanaingia na kuunda wasifu wa wanafunzi — wakipakia picha, taarifa za wazazi na maelezo ya kitaaluma.",
+    how_step3_title: "Nambari ya TSID Inatokea",
+    how_step3_body: "Mfumo huzalisha kiotomatiki nambari ya kipekee ya TSID na kitambulisho cha CR80 kinachoweza kuchapishwa chenye msimbo wa QR.",
+    how_step4_title: "Mtu Yeyote Anaweza Kuthibitisha Haraka",
+    how_step4_body: "Scan QR au weka nambari ya TSID kwenye verify.tsid.go.tz — hakuna kuingia kunahitajika, matokeo kwa sekunde.",
+
+    // Stats
+    stat_regions: "Mikoa na Halmashauri",
+    stat_portals: "Milango Salama",
+    stat_standard: "Kiwango cha Kitambulisho",
+    stat_digital: "Mchakato Bila Karatasi",
+
+    // Sections
+    feat_label: "TSID Inafanya Nini",
+    portals_label: "Milango Mitatu",
+    roles_sub: "Kila mdau ana lango lake maalum lenye zana na ruhusa sahihi.",
+
+    // CTA Banner
+    cta_title: "Mfumo wa kitaifa wa kitambulisho cha mwanafunzi Tanzania — unapatikana sasa.",
+    cta_sub: "Jiunge na maelfu ya shule zinazotumia TSID kutoa vitambulisho vya wanafunzi vinavyothibitishwa.",
+
+    // Footer
+    send_feedback: "Tuma Maoni",
     features_title: "Imejengwa kwa mzunguko wote wa utambulifu",
     feat_school_title: "Shule zinatoa", feat_school_body: "Sajili wanafunzi, ambatisha picha, zalisha nambari rasmi za TSID na chapisha vitambulisho.",
     feat_verify_title: "Mtu yeyote anathibitisha", feat_verify_body: "Utafutaji wa umma na wa siri unaorejesha taarifa zilizosafishwa tu — hakuna uvujaji wa data za kibinafsi.",

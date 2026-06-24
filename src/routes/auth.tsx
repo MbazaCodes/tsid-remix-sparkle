@@ -56,10 +56,18 @@ function AuthPage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+    <div className="auth-grid" style={{ minHeight: "100vh", display: "grid" }}>
+      <style>{`
+        .auth-grid { grid-template-columns: 1fr 1fr; }
+        @media (max-width: 900px) {
+          .auth-grid { grid-template-columns: 1fr !important; }
+          .auth-left { padding: 28px 22px !important; gap: 24px; }
+          .auth-right { padding: 28px 20px !important; }
+        }
+      `}</style>
 
       {/* ── LEFT: white panel ─────────────────────────────────────── */}
-      <div style={{
+      <div className="auth-left" style={{
         background: "#ffffff",
         display: "flex",
         flexDirection: "column",
@@ -68,19 +76,19 @@ function AuthPage() {
         borderRight: "1px solid #e2e8f0",
       }}>
         {/* Logo + wordmark */}
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 20, textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 16, textDecoration: "none" }}>
           <img
             src={ASSETS.logo}
             alt="TSID"
             style={{
-              width: 72, height: 72,
+              width: 112, height: 112,
               objectFit: "contain",
               filter: "drop-shadow(0 4px 12px rgba(0,51,102,.15))",
             }}
           />
           <div>
-            <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 34, color: "#003366", letterSpacing: -0.5, lineHeight: 1 }}>TSID</div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: "#1B8F3A", letterSpacing: 0.8, marginTop: 4, textTransform: "uppercase" }}>Tanzania Student ID</div>
+            <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 24, color: "#003366", letterSpacing: -0.5, lineHeight: 1 }}>TSID</div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: "#1B8F3A", letterSpacing: 0.8, marginTop: 4, textTransform: "uppercase" }}>Tanzania Student ID</div>
           </div>
         </Link>
 
@@ -88,11 +96,11 @@ function AuthPage() {
         <div>
           <h1 style={{
             fontFamily: "var(--font-display)",
-            fontWeight: 900,
-            fontSize: "clamp(1.2rem, 1.8vw, 1.6rem)",
+            fontWeight: 800,
+            fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
             color: "#003366",
-            lineHeight: 1.1,
-            marginBottom: 24,
+            lineHeight: 1.2,
+            marginBottom: 20,
           }}>
             {t("auth_subtitle")}
           </h1>
@@ -112,8 +120,8 @@ function AuthPage() {
                     <M.icon style={{ width: 18, height: 18, color: "#fff" }} />
                   </div>
                   <div>
-                    <span style={{ fontWeight: 800, fontSize: 14, color: "#003366" }}>{M.label}</span>
-                    <span style={{ fontSize: 14, color: "#64748b" }}> — {M.desc}</span>
+                    <span style={{ fontWeight: 700, fontSize: 12, color: "#003366" }}>{M.label}</span>
+                    <span style={{ fontSize: 12, color: "#64748b" }}> — {M.desc}</span>
                   </div>
                 </div>
               );
@@ -129,7 +137,7 @@ function AuthPage() {
       </div>
 
       {/* ── RIGHT: blue login panel ───────────────────────────────── */}
-      <div style={{
+      <div className="auth-right" style={{
         background: "linear-gradient(145deg, #003366 0%, #004f99 60%, #0a6aad 100%)",
         display: "flex",
         alignItems: "center",
@@ -147,13 +155,13 @@ function AuthPage() {
           {/* Title */}
           <h2 style={{
             fontFamily: "var(--font-display)",
-            fontWeight: 900, fontSize: 32,
+            fontWeight: 800, fontSize: 24,
             color: "#fff",
             marginBottom: 8, letterSpacing: -0.3,
           }}>
             {t("auth_title")}
           </h2>
-          <p style={{ fontSize: 14, color: "rgba(255,255,255,.65)", marginBottom: 32 }}>
+          <p style={{ fontSize: 12, color: "rgba(255,255,255,.65)", marginBottom: 24 }}>
             {t("auth_subtitle")}
           </p>
 

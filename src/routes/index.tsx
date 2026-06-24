@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
 
 /* ── Demo card data ──────────────────────────────────────────────── */
 const DEMO_DATA = {
-  tsid_no: "TSID-2025-A1234567", full_name: "Juma A. Mwanza",
+  tsid: "TSID-2025-A1234567", fullname: "Juma A. Mwanza",
   school_name: "Shule Ya Msingi Mwanga", school_code: "PS1234",
   region: "Dar es Salaam", district: "Kinondoni",
   dob: "2014-05-15", gender: "Male", nationality: "Tanzanian",
